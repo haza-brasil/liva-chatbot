@@ -30,7 +30,7 @@ services:
       context: .
       dockerfile: ./docker/bot.Dockerfile
     restart: unless-stopped
-    command: make run-rocketchat 
+    command: make run-rocketchat
     env_file:
       - docker/bot.env
     ports:
@@ -53,24 +53,6 @@ services:
       - ./bot/Makefile:/bot/Makefile
     command: sh -c "make run-actions"
 
-  # ============================ Telegram Bot =================================
-  telegram_bot:
-      build:
-        context: .
-        dockerfile: ./docker/bot.Dockerfile
-      environment:
-        - TELEGRAM_BOT_USERNAME=lappisbot
-        - TELEGRAM_TOKEN=token
-        - TELEGRAM_WEBHOOK=your_webhook_server/webhooks/telegram/webhook
-      ports:
-        - 5001:5001
-      depends_on:
-        - actions
-      volumes:
-        - ./bot:/bot
-        - ./scripts:/scripts
-      command: sh -c "make run-telegram"
-
   # =============================== Notebooks =================================
   notebooks:
     build:
@@ -83,3 +65,35 @@ services:
       - ./notebooks:/work/notebooks
     ports:
       - 8888:8888
+
+  # =============================== Analytics =================================
+  elasticsearch:
+    build:
+      context: .
+      dockerfile: ./docker/elasticsearch.Dockerfile
+    restart: unless-stopped
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - discovery.type=single-node
+    volumes:
+      - esbackup:/usr/share/elasticsearch/backup
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - esdata:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.4.2
+    restart: unless-stopped
+    ports:
+      - 5601:5601
+    environment:
+      - SERVER_PORT=5601
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+volumes:
+  esdata:
+    driver: local
+  esbackup:
