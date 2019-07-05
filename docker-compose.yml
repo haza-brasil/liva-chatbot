@@ -93,6 +93,29 @@ services:
     depends_on:
       - elasticsearch
 
+  kibanaweb:
+    build:
+      context: .
+      dockerfile: ./docker/kibana/kibanaweb.Dockerfile
+    restart: unless-stopped
+    environment:
+      - PORT=8080
+      - ALLOWED_HOSTS=localhost
+      - PREFIX_URL=
+    volumes:
+      - ./kibanaweb:/kibanaweb
+    ports:
+      - 8080:8080
+    depends_on:
+      - kibanawebdb
+
+  kibanawebdb:
+    image: postgres:10.5
+    restart: unless-stopped
+    volumes:
+      - ./kibanaweb/postgres-data:/var/lib/postgresql/data
+
+
 volumes:
   esdata:
     driver: local
