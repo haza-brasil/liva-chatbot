@@ -12,8 +12,8 @@ run-console:
   --debug --endpoints endpoints.yml
 
 run-api:
-	python3 -m rasa_core.run -d /models/dialogue -u /models/nlu/current \
-  --endpoints endpoints.yml --debug --enable_api 
+	python3 -m rasa_core.run -d /models/dialogue -u /models/nlu/current --debug \
+  --port 5005 --endpoints endpoints.yml --enable_api
 
 evaluate:
 	python3 -m rasa_core.evaluate -d /models/dialogue -s data/core/

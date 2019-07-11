@@ -79,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
         'USER': 'postgres',
-        'HOST': 'kibanawebdb',
+        'HOST': 'kibana-webdb',
         'PORT': 5432,
     }
 }

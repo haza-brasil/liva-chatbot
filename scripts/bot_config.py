@@ -57,7 +57,7 @@ def api(endpoint, values=None, is_post=True):
     data = None
     if values:
         data = json.dumps(values)
-    
+
     if is_post:
         response = requests.post(url, data=data, headers=user_header)
     else:
@@ -151,6 +151,8 @@ def configure_livechat():
     # Activate Livechat Webhook Send Request on Agent Messages
     api_post('settings/Livechat_webhook_on_agent_message', {'value': True})
 
+    api_post('settings/Livechat_Allow_collect_and_store_HTTP_header_informations', {'value': True})
+
 
 def configure_webhooks():
     webooks = api_get('integrations.list')
@@ -202,9 +204,11 @@ def create_department(bot_agent_id):
         api_post('livechat/department', {
             'department': {
                 'enabled': True,
-                'showOnRegistration': True,
                 'name': 'department',
-                'description': 'default department'
+                'description': 'default department',
+                'showOnRegistration': True,
+                'email': 'department@test.com',
+                'showOnOfflineForm': False
             },
             'agents': [{
                 'agentId': bot_agent_id,
