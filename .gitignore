@@ -34,7 +34,7 @@ uploads
 
 
 ### database
-web/postegres-data
+kibanaweb/postgres-data/
 
 
 # Created by https://www.gitignore.io/api/vim,linux,macos,python

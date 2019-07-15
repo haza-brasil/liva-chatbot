@@ -16,7 +16,7 @@
     })(window, document, 'script', host + '/livechat');
 
     RocketChat(function() {
-      this.setGuestEmail(window.location.hostname);
+      this.setCustomField('hostname', window.location.hostname);
     });
 
     </script>

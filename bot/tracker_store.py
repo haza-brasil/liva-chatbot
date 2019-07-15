@@ -176,4 +176,5 @@ class ElasticTrackerStore(InMemoryTrackerStore):
         self.max_event_history = max_event_history
         if tracker is None:
             tracker = self.create_tracker(sender_id)
+
         return tracker

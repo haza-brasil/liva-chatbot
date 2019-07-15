@@ -1,4 +1,7 @@
+import logging
 from rasa_core_sdk import Action
+
+logger = logging.getLogger(__name__)
 
 
 class ActionTest(Action):

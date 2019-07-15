@@ -3,7 +3,7 @@ version: '2'
 services:
   # ============================= Rocketchat ==================================
   rocketchat:
-    image: rocketchat/rocket.chat:1.1.3
+    image: rocketchat/rocket.chat:1.2.1
     command: bash -c 'for i in `seq 1 30`; do node main.js && s=$$? && break || s=$$?; echo "Tried $$i times. Waiting 5 secs..."; sleep 5; done; (exit $$s)'
     restart: unless-stopped
     volumes:

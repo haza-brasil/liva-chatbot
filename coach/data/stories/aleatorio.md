@@ -38,9 +38,6 @@
 * como_estou
 - utter_como_estou
 
-
-
-
 ## path_playlist
 * playlist
 - utter_playlist

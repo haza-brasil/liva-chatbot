@@ -2,7 +2,8 @@ import logging
 from typing import Callable, Optional, Text
 
 from rasa_core.agent import Agent
-from rasa_core.processor import MessageProcessor
+
+from processor import CustomMessageProcessor
 
 logger = logging.getLogger(__name__)
 
@@ -25,12 +26,13 @@ class CustomAgent(Agent):
 
     def create_processor(self,
                          preprocessor: Optional[Callable[[Text], Text]] = None
-                         ) -> MessageProcessor:
+                         ) -> CustomMessageProcessor:
         """Instantiates a processor based on the set state of the agent."""
         # Checks that the interpreter and tracker store are set and
         # creates a processor
         self._ensure_agent_is_ready()
-        return MessageProcessor(
+
+        return CustomMessageProcessor(
             self.interpreter,
             self.policy_ensemble,
             self.domain,

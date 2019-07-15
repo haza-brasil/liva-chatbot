@@ -87,12 +87,13 @@ class RocketChatInput(InputChannel):
         self.output_channel = RocketChatBot(
             self.user, self.password, self.server_url)
 
-    def send_message(self, text, sender_name, recipient_id, on_new_message,
-                     host):
+    def send_message(self, text, sender_name, recipient_id,
+                     hostname, on_new_message):
         if sender_name != self.user:
             user_msg = UserMessage(text, self.output_channel,
                                    recipient_id, input_channel=self.name())
-            user_msg.host = host
+            user_msg.hostname = hostname
+
             on_new_message(user_msg)
 
     def blueprint(self, on_new_message):
@@ -106,6 +107,7 @@ class RocketChatInput(InputChannel):
         def webhook():
             if request.json:
                 output = request.json
+                hostname = None
 
                 if "visitor" not in output:
                     sender_name = output.get("user_name", None)
@@ -118,11 +120,13 @@ class RocketChatInput(InputChannel):
 
                     recipient_id = output.get("_id")
 
-                    visitor = output.get("visitor", None).get("email", None)[0]
-                    host = visitor['address']
+                    custom_fields = output.get("visitor", None).get("customFields", None)
+
+                    if custom_fields:
+                        hostname = custom_fields.get("hostname", None)
 
                 self.send_message(text, sender_name, recipient_id,
-                                  on_new_message, host)
+                                  hostname, on_new_message)
 
             return make_response()
 
