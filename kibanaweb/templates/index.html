@@ -15,6 +15,10 @@
       h.parentNode.insertBefore(j, h);
     })(window, document, 'script', host + '/livechat');
 
+    RocketChat(function() {
+      this.setGuestEmail(window.location.hostname);
+    });
+
     </script>
     <!-- End of Rocket.Chat Livechat Script -->
 

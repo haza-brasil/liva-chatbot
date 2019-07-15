@@ -2,11 +2,12 @@ import logging
 import os
 
 from rasa_core.utils import configure_colored_logging, AvailableEndpoints
-from rasa_core.run import start_server, load_agent
+from rasa_core.run import start_server
 from rasa_core.interpreter import NaturalLanguageInterpreter
 
 from connector import RocketChatInput
 from tracker_store import ElasticTrackerStore
+from agent import CustomAgent
 
 logger = logging.getLogger(__name__)
 configure_colored_logging(loglevel='DEBUG')
@@ -42,10 +43,11 @@ def run(core_dir, nlu_dir):
             scheme_port=os.getenv('ELASTICSEARCH_PORT', '80')
         )
 
-    _agent = load_agent(core_dir,
-                        interpreter=_interpreter,
-                        tracker_store=_tracker_store,
-                        endpoints=_endpoints)
+    _agent = CustomAgent.load(core_dir,
+                              interpreter=_interpreter,
+                              generator=_endpoints.nlg,
+                              tracker_store=_tracker_store,
+                              action_endpoint=_endpoints.action)
 
     http_server = start_server([input_channel], "", "", 5005, _agent)
 

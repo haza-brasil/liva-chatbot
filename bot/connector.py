@@ -2,10 +2,9 @@ import logging
 import threading
 import os
 import time
+
 from typing import Text
-
 from flask import Blueprint, request, jsonify, make_response
-
 from rasa_core.channels.channel import UserMessage, OutputChannel, InputChannel
 
 logger = logging.getLogger(__name__)
@@ -88,10 +87,12 @@ class RocketChatInput(InputChannel):
         self.output_channel = RocketChatBot(
             self.user, self.password, self.server_url)
 
-    def send_message(self, text, sender_name, recipient_id, on_new_message):
+    def send_message(self, text, sender_name, recipient_id, on_new_message,
+                     host):
         if sender_name != self.user:
-            user_msg = UserMessage(text, self.output_channel, recipient_id,
-                                   input_channel=self.name())
+            user_msg = UserMessage(text, self.output_channel,
+                                   recipient_id, input_channel=self.name())
+            user_msg.host = host
             on_new_message(user_msg)
 
     def blueprint(self, on_new_message):
@@ -103,7 +104,6 @@ class RocketChatInput(InputChannel):
 
         @rocketchat_webhook.route("/webhook", methods=['GET', 'POST'])
         def webhook():
-            request.get_data()
             if request.json:
                 output = request.json
 
@@ -115,10 +115,14 @@ class RocketChatInput(InputChannel):
                     messages_list = output.get("messages", None)
                     text = messages_list[0].get("msg", None)
                     sender_name = messages_list[0].get("username", None)
+
                     recipient_id = output.get("_id")
 
+                    visitor = output.get("visitor", None).get("email", None)[0]
+                    host = visitor['address']
+
                 self.send_message(text, sender_name, recipient_id,
-                                  on_new_message)
+                                  on_new_message, host)
 
             return make_response()
 
