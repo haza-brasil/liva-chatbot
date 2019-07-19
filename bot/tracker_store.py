@@ -1,14 +1,11 @@
 import logging
 import os
-import time
 import datetime
 import hashlib
 import json
 
-from rasa_core.tracker_store import InMemoryTrackerStore
-from rasa_core.events import ActionExecuted, BotUttered, UserUttered
-
-from elasticsearch import Elasticsearch
+from rasa_core.tracker_store import MongoTrackerStore
+from rasa_core.trackers import EventVerbosity
 
 try:
     from nltk.corpus import stopwords
@@ -32,149 +29,155 @@ def gen_id(timestamp):
     return _id
 
 
-class ElasticTrackerStore(InMemoryTrackerStore):
-    def __init__(self, domain,
-                 user=None, password=None, scheme='http', scheme_port=80):
-        if user is None:
-            self.es = Elasticsearch([domain])
+class CustomMongoTrackerStore(MongoTrackerStore):
+    def __init__(self, m_domain, e_domain, e_user=None,
+                 e_password=None, e_scheme='http', e_scheme_port=80):
+        super(CustomMongoTrackerStore, self).__init__(
+            domain=m_domain,
+            host="mongodb://" + m_domain)
+
+        # ElasticSearch Integration
+        from elasticsearch import Elasticsearch
+
+        if e_user is None:
+            self.es = Elasticsearch([e_domain])
         else:
             self.es = Elasticsearch(
-                ['{}://{}:{}@{}:{}'.format(scheme, user, password,
-                                           domain, scheme_port)],
-            )
+                ['{}://{}:{}@{}:{}'.format(e_scheme, e_user, e_password,
+                                           e_domain, e_scheme_port)],)
 
-        super(ElasticTrackerStore, self).__init__(domain)
+        # RocketChat Database Integration
+        from pymongo.database import Database
 
-    def save_user_message(self, tracker):
-        if not tracker.latest_message.text:
-            return
+        self.rocket_db = Database(self.client, "rocketchat")
+        self.collection_message = "rocketchat_message"
 
-        ts = time.time()
-        timestamp = datetime.datetime.strftime(
-            datetime.datetime.fromtimestamp(ts),
-            '%Y/%m/%d %H:%M:%S'
-        )
+    @property
+    def rocketchat_message(self):
+        return self.rocket_db[self.collection_message]
 
-        # Bag of words
+    def get_last_hostname(self, sender_id):
+        last_history = self.rocketchat_message.find_one(
+            {"t": "livechat_navigation_history",
+             "rid": sender_id}, sort=[('ts', -1)])
+
+        if not last_history:
+            return None
+
+        return last_history['navigation']['page']['location']['hostname']
+
+    def _get_bag_of_words(self, message):
         tags = []
-        for word in tracker.latest_message.text.replace('. ', ' ')\
-                                               .replace(',', ' ') \
-                                               .replace('"', '')  \
-                                               .replace("'", '')  \
-                                               .replace('*', '')  \
-                                               .replace('(', '')  \
-                                               .replace(')', '')  \
-                                               .split(' '):
+        for word in message.replace('. ', ' ')\
+                           .replace(',', ' ') \
+                           .replace('"', '')  \
+                           .replace("'", '')  \
+                           .replace('*', '')  \
+                           .replace('(', '')  \
+                           .replace(')', '')  \
+                           .split(' '):
             if word.lower() not in stopwords.words('portuguese') \
                             and len(word) > 1:
                 tags.append(word)
+
+        return tags
+
+    def _save_on_elastic(self, sender_id, text, timestamp, hostname,
+                         is_bot=False, tags=[], entities=[], intent_name='',
+                         intent_confidence='', utter_name='',
+                         is_fallback=False):
+
+        time = datetime.datetime.strftime(
+            datetime.datetime.fromtimestamp(timestamp), '%Y/%m/%d %H:%M:%S')
 
         message = {
             'environment': ENVIRONMENT_NAME,
             'version': BOT_VERSION,
 
-            'user_id': tracker.sender_id,
-            'is_bot': False,
-            'timestamp': timestamp,
+            'user_id': sender_id,
+            'is_bot': is_bot,
 
-            'text': tracker.latest_message.text,
+            'text': text,
             'tags': tags,
+            'timestamp': time,
+            'hostname': hostname or '',
 
-            'entities': tracker.latest_message.entities,
-            'intent_name': tracker.latest_message.intent['name'],
-            'intent_confidence': tracker.latest_message.intent['confidence'],
+            'intent_name': intent_name,
+            'intent_confidence': intent_confidence,
+            'entities': entities,
 
-            'utter_name': '',
-            'is_fallback': False,
+            'utter_name': utter_name,
+            'is_fallback': is_fallback,
         }
 
+        msg_type = "user"
+
+        if is_bot:
+            msg_type = "bot"
+
         self.es.index(index='messages', doc_type='message',
-                      id='{}_user_{}'.format(ENVIRONMENT_NAME, gen_id(ts)),
+                      id='{}_{}_{}'.format(ENVIRONMENT_NAME,
+                                           msg_type,
+                                           gen_id(timestamp)),
                       body=json.dumps(message))
 
-    def save_bot_message(self, tracker):
-        if not tracker.latest_message.text:
+    def _conversation_to_elastic_search(self, conversation):
+        message_text = conversation['latest_message']['text']
+
+        # Checking if conversation contains any relevant data
+        if not message_text:
             return
 
-        utters = []
-        index = len(tracker.events) - 1
-        while True:
-            evt = tracker.events[index]
-            if isinstance(evt, UserUttered):
-                break
-            elif isinstance(evt, BotUttered):
-                while not isinstance(evt, ActionExecuted):
-                    index -= 1
-                    evt = tracker.events[index]
-                utters.append(evt.action_name)
+        events = conversation['events']
+        index = len(events) - 1
+
+        # Checking if last event is from the user
+        while events[index]['event'] != 'action':
+            event = events[index]
+
+            if event['event'] == 'user':
+                tags = self._get_bag_of_words(message_text)
+                entities = conversation['latest_message']['entities']
+
+                self._save_on_elastic(
+                    conversation['sender_id'],
+                    message_text,
+                    event['timestamp'],
+                    conversation['slots']['hostname'],
+                    False,
+                    tags,
+                    [entity['value'] for entity in entities],
+                    event['parse_data']['intent']['name'],
+                    event['parse_data']['intent']['confidence'])
+                return
+
             index -= 1
 
-        time_offset = 0
-        for utter in utters[::-1]:
-            time_offset += 100
+        # Last event is from the bot. Saving the utter(s)
+        while events[index]['event'] != 'user':
+            event = events[index]
 
-            ts = (
-                datetime.datetime.now() +
-                datetime.timedelta(milliseconds=time_offset)
-            ).timestamp()
+            if event['event'] == 'action' and event['name'] != 'action_listen':
+                # policy = event['policy']
+                self._save_on_elastic(
+                    conversation['sender_id'],
+                    message_text,
+                    event['timestamp'],
+                    conversation['slots']['hostname'],
+                    True,
+                    utter_name=event['name'],
+                    is_fallback=event['name'] == 'action_default_fallback')
+            index -= 1
 
-            timestamp = datetime.datetime.strftime(
-                datetime.datetime.fromtimestamp(ts),
-                '%Y/%m/%d %H:%M:%S'
-            )
+    def save(self, tracker, timeout=None):
+        super(CustomMongoTrackerStore, self).save(tracker)
 
-            user_text = ''
+        conversation = tracker.current_state(EventVerbosity.ALL)
 
-            if utter == 'action_default_fallback':
-                index = len(tracker.events) - 1
-                while index > 0:
-                    evt = tracker.events[index]
-                    if isinstance(evt, UserUttered):
-                        user_text = evt.text
-                        break
-                    index -= 1
-            else:
-                user_text = tracker.latest_message.text
-
-            message = {
-                'environment': ENVIRONMENT_NAME,
-                'version': BOT_VERSION,
-                'user_id': tracker.sender_id,
-
-                'is_bot': True,
-
-                'text': user_text,
-                'tags': [],
-                'timestamp': timestamp,
-
-                'entities': [],
-                'intent_name': '',
-                'intent_confidence': '',
-
-                'utter_name': utter,
-                'is_fallback': utter == 'action_default_fallback',
-            }
-
-            self.es.index(index='messages', doc_type='message',
-                          id='{}_bot_{}'.format(ENVIRONMENT_NAME, gen_id(ts)),
-                          body=json.dumps(message))
-
-    def save(self, tracker):
         if ENABLE_ANALYTICS:
             try:
-                self.save_user_message(tracker)
-                self.save_bot_message(tracker)
+                self._conversation_to_elastic_search(conversation)
             except Exception as ex:
                 logger.error('Could not track messages '
                              'for user {}'.format(tracker.sender_id))
                 logger.error(str(ex))
-
-        super(ElasticTrackerStore, self).save(tracker)
-
-    def get_or_create_tracker(self, sender_id, max_event_history=None):
-        tracker = self.retrieve(sender_id)
-        self.max_event_history = max_event_history
-        if tracker is None:
-            tracker = self.create_tracker(sender_id)
-
-        return tracker

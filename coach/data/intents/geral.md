@@ -96,3 +96,8 @@
 - Tudo bem e você
 - como vc esta
 - como vai
+
+## intent:slot_test
+- [Slot Set](testslot)
+- Using [Test Slot](testslot)
+- Setting my [Slot](testslot)

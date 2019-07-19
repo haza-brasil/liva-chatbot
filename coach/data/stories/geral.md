@@ -14,7 +14,7 @@
 
 ## Nao entendi
 * diga_mais
-    - utter_diga_mais  
+    - utter_diga_mais
 
 ## fallback
 * out_of_scope
@@ -37,3 +37,7 @@
 ## path 2
 * cumprimentar
     - utter_cumprimentar
+
+## Set Slot
+* slot_test
+    - utter_slot_test

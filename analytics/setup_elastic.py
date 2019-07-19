@@ -32,6 +32,7 @@ settings = {
                                         "type": "date",
                                         "format": "yyyy/MM/dd HH:mm:ss"
                                      },
+                "hostname":          {"type": "keyword"},
                 "intent_name":       {"type": "keyword"},
                 "intent_confidence": {"type": "double"},
                 "entities":          {"type": "keyword"},

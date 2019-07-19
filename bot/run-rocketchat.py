@@ -6,7 +6,7 @@ from rasa_core.run import start_server
 from rasa_core.interpreter import NaturalLanguageInterpreter
 
 from connector import RocketChatInput
-from tracker_store import ElasticTrackerStore
+from tracker_store import CustomMongoTrackerStore
 from agent import CustomAgent
 
 logger = logging.getLogger(__name__)
@@ -31,16 +31,17 @@ def run(core_dir, nlu_dir):
 
     elastic_user = os.getenv('ELASTICSEARCH_USER')
     if elastic_user is None:
-        _tracker_store = ElasticTrackerStore(
-            domain=os.getenv('ELASTICSEARCH_URL', 'elasticsearch:9200')
+        _tracker_store = CustomMongoTrackerStore(
+            m_domain=os.getenv('MONGO_URL', 'mongo:27017'),
+            e_domain=os.getenv('ELASTICSEARCH_URL', 'elasticsearch:9200')
         )
     else:
-        _tracker_store = ElasticTrackerStore(
-            domain=os.getenv('ELASTICSEARCH_URL', 'elasticsearch:9200'),
-            user=os.getenv('ELASTICSEARCH_USER', 'user'),
-            password=os.getenv('ELASTICSEARCH_PASSWORD', 'password'),
-            scheme=os.getenv('ELASTICSEARCH_HTTP_SCHEME', 'http'),
-            scheme_port=os.getenv('ELASTICSEARCH_PORT', '80')
+        _tracker_store = CustomMongoTrackerStore(
+            e_domain=os.getenv('ELASTICSEARCH_URL', 'elasticsearch:9200'),
+            e_user=os.getenv('ELASTICSEARCH_USER', 'user'),
+            e_password=os.getenv('ELASTICSEARCH_PASSWORD', 'password'),
+            e_scheme=os.getenv('ELASTICSEARCH_HTTP_SCHEME', 'http'),
+            e_scheme_port=os.getenv('ELASTICSEARCH_PORT', '80')
         )
 
     _agent = CustomAgent.load(core_dir,

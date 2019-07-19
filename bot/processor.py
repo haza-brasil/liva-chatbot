@@ -268,9 +268,11 @@ class CustomMessageProcessor(object):
         for e in self.domain.slots_for_entities(parse_data["entities"]):
             tracker.update(e)
 
+        hostname = self.tracker_store.get_last_hostname(tracker.sender_id)
+
         # setting hostname unfeaturized slot
-        if tracker.get_slot('hostname') != message.hostname:
-            tracker.update(SlotSet('hostname', message.hostname))
+        if tracker.get_slot('hostname') != hostname:
+            tracker.update(SlotSet('hostname', hostname))
 
         logger.debug("Logged UserUtterance - "
                      "tracker now has {} events".format(len(tracker.events)))

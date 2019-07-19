@@ -32,6 +32,7 @@ intents:
   - historia
   - risada
   - action_test
+  - slot_test
 
 entities:
   - religiao
@@ -57,9 +58,12 @@ entities:
   - hobby
   - bff
   - historia
+  - testslot
 
 slots:
   hostname:
+    type: unfeaturized
+  testslot:
     type: unfeaturized
 
 templates:
@@ -414,6 +418,10 @@ templates:
 
         Você está feliz hoje, hein!?
 
+  utter_slot_test:
+    - text: |
+        Setando slot
+
 actions:
   - utter_default
   - utter_cumprimentar
@@ -447,3 +455,4 @@ actions:
   - utter_historia
   - utter_risada
   - action_test
+  - utter_slot_test
