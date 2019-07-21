@@ -1,13 +1,13 @@
 import logging
 import os
 
-from rasa_core.utils import configure_colored_logging, AvailableEndpoints
-from rasa_core.run import start_server
 from rasa_core.interpreter import NaturalLanguageInterpreter
+from rasa_core.run import start_server
+from rasa_core.utils import configure_colored_logging, AvailableEndpoints
 
-from connector import RocketChatInput
-from tracker_store import CustomMongoTrackerStore
-from agent import CustomAgent
+from custom_rasa_core.agent import CustomAgent
+from custom_rasa_core.connector import RocketChatInput
+from custom_rasa_core.tracker_store import CustomMongoTrackerStore
 
 logger = logging.getLogger(__name__)
 configure_colored_logging(loglevel='DEBUG')

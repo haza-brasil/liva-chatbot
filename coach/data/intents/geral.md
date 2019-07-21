@@ -48,31 +48,10 @@
 - ola boa tarde
 
 ## intent:elogios
-- Você é  muito educado!
+- Você é muito educado!
 - Adorei
 - Me ajudou muito
 - vc eh linda
-
-## intent:negar
-- não sei onde a minha pergunta se encaixa
-- nao quero saber mais
-- quero falar sobre outra coisa
-- não quero saber de mais nada
-- nao era isso, me enganei
-- não quero falar sobre isso
-- ainda nao sei escolher um tópico
-- ainda não pensei sobre isso
-- nao sei do que quero falar
-- não sei do que quero conversar
-- nunca
-- nao
-- nao conheco
-- não quero
-- escolhi errado
-- falei errado
-- duvida
-- ainda não sei
-- nenhum
 
 ## intent:diga_mais
 - como funciona
@@ -97,7 +76,69 @@
 - como vc esta
 - como vai
 
-## intent:slot_test
-- [Slot Set](testslot)
-- Using [Test Slot](testslot)
-- Setting my [Slot](testslot)
+## intent:o_que_sei_falar
+- sobre o que você sabe falar
+- o que mais você sabe falar
+- quais assuntos você fala
+- o que você sabe
+- lista de assuntos possiveis
+- quais as perguntas vc responde
+- quais as perguntas você responde
+- quero ajuda
+- meajuda
+- meajude
+- MEAJUD
+- MEAJDA
+- me ajuda
+- me ajude
+- ajuda eu
+- ajuda
+- menu
+
+## intent:affirm
+- sim
+- claro
+- claro que estão
+- claro que estao
+- claro que sim
+- correto
+- Afirmativo
+- está sim
+- de acordo
+- Está correto
+- estão sim
+- estao
+- estão
+- sim estão corretas
+- Sim estao
+- si
+- sim está correto
+- com certeza
+- sim, com certeza
+- sim sim
+- exato
+- s
+- Sim obrigado
+- S
+- obvio
+- obvio que sim
+
+## intent:deny
+- nao, obrigado
+- não obrigado
+- nao valeu
+- ñ
+- n
+- nao
+- não
+- nao quero
+- nao conheco
+- nunca
+- nao
+- negativo
+- jamais
+- não estão corretas
+- não estão
+- nao estao
+- não está
+- nao esta correto

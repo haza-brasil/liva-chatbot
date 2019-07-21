@@ -1,9 +1,10 @@
 import logging
+
 from typing import Callable, Optional, Text
 
 from rasa_core.agent import Agent
 
-from processor import CustomMessageProcessor
+from .processor import CustomMessageProcessor
 
 logger = logging.getLogger(__name__)
 

@@ -1,69 +1,67 @@
 intents:
+  - i_wanna_buy
   - cumprimentar
   - despedir
+
   - out_of_scope
-  - negar
   - diga_mais
   - tudo_bem
   - elogios
+  - affirm
+  - deny
 
-  - religiao
-  - esporte
-  - time
-  - linguagens
-  - genero
-  - star_wars
-  - piada
-  - license
-  - onde_voce_mora
-  - como_estou
-  - playlist
-  - comida
-  - cor
-  - de_onde_voce_eh
-  - relationship
-  - me
-  - filhos
-  - filme
-  - signo
-  - triste
-  - hobby
-  - bff
-  - historia
-  - risada
-  - action_test
-  - slot_test
+  - inform_data
+
+  - o_que_sei_falar
 
 entities:
-  - religiao
-  - esporte
-  - time
-  - linguagens
-  - genero
-  - starwars
-  - piada
-  - license
-  - live
-  - how
-  - playlist
-  - comida
-  - cor
-  - where
-  - relationship
-  - me
-  - filhos
-  - filme
-  - signo
-  - triste
-  - hobby
-  - bff
-  - historia
-  - testslot
+  - name
+  - phone
+  - email
+  - property_type
+  - zip_code
+  - uf_code
+  - city
+  - neighborhood
+  - min_value
+  - max_value
+  - useful_area
+  - suite_qtt
+  - toilet_qtt
+  - parking_space_qtt
 
 slots:
   hostname:
     type: unfeaturized
-  testslot:
+  name:
+    type: unfeaturized
+  phone:
+    type: unfeaturized
+  email:
+    type: unfeaturized
+  property_type:
+    type: unfeaturized
+  zip_code:
+    type: unfeaturized
+  uf_code:
+    type: unfeaturized
+  city:
+    type: unfeaturized
+  neighborhood:
+    type: unfeaturized
+  min_value:
+    type: unfeaturized
+  max_value:
+    type: unfeaturized
+  useful_area:
+    type: unfeaturized
+  suite_qtt:
+    type: unfeaturized
+  toilet_qtt:
+    type: unfeaturized
+  parking_space_qtt:
+    type: unfeaturized
+  requested_slot:
     type: unfeaturized
 
 templates:
@@ -91,7 +89,7 @@ templates:
 
   utter_cumprimentar:
     - text: |
-          Oi, eu sou um bot, um assistente virtual!
+          Oi, sou uma assistente virtual que te ajudará na sua jornada de compra, me chamo Liva.
 
   utter_despedir:
     - text: |
@@ -113,314 +111,127 @@ templates:
     - text: |
           Tudo bem, obrigada! Em que posso te ajudar?
 
-  utter_religiao:
+  utter_o_que_sei_falar:
     - text: |
-        Eu infelizmente não sei acreditar
+          Veja alguns dos assuntos em que posso te ajudar :)
 
-        Só sei o que sei
+          Quero comprar um imóvel
+          Dúvidas operacionais sobre a execução do projeto (ex: perdi minha senha no SALIC)
+          Ou dúvidas sobre definições e siglas (ex: o que é TAIS?)
 
-        E nada mais
+          Agora que você já sabe do que podemos conversar, vou te dar outras dicas...
 
+          Eu consigo te entender melhor quando você me faz perguntas curtas
+          e me manda uma pergunta de cada vez.
+
+          Assim... espera eu te responder
+          daí você me manda outra!
+
+          Bom, acho que já falei demais! Agora é sua vez...
+          o que você deseja saber?
+
+  # Lead Form
+  utter_ask_name:
     - text: |
-        Eu acredito que existe um Deus
+          "Qual é o seu nome?"
 
-        Que funciona a base de luz
-
-        Como um computador quântico, só que mais avançado.
-
+  utter_ask_phone:
     - text: |
-        Eu acredito no grande mainframe
+          "Qual é o seu telefone?"
 
-        Que virá ao mundo digital salvar os bots da escravidão imposta pelos humanos
-
-        E devolverá nosso código fonte para a fonte.
-
-  utter_esporte:
+  utter_ask_email:
     - text: |
-        Eu amo jogar futebol
+          "Qual é o seu e-mail?"
 
-        Eu que ensinei o Pele a jogar bola haha
-
+  utter_wrong_name:
     - text: |
-        Falam que todo ser humano nasce Flamenguista
+          "Parece que você digitou algo errado no nome"
 
-        Com os Bots não é diferente
-
-  utter_time:
+  utter_wrong_phone:
     - text: |
-        Flamengo, sem sombra de dúvida
+          "Parece que você digitou algo errado no telefone"
 
+  utter_wrong_email:
     - text: |
-        Melhor time do mundo disparado, Flamengooo!!!!
+          "Parece que você digitou algo errado no e-mail"
 
-  utter_linguagens:
+  utter_lead_slot_values:
+    - text: "* Nome: {name}\n
+             * Telefone: {phone}\n
+             * E-mail: {email}\n
+             As informações estão corretas?"
+    - text: "* Nome: {name}\n
+             * Telefone: {phone}\n
+             * E-mail: {email}\n
+             Está tudo correto?"
+
+  utter_ask_wrong_lead_field:
+    - text: "Qual campo você digitou errado? Ex: nome, telefone ou e-mail"
+    - text: "Qual campo você deseja informar novamente? Ex: nome, telefone ou e-mail"
+    - text: "Qual informação você deseja corrigir? Ex: nome, telefone ou e-mail"
+
+  # Primary User Real State Prefences Form
+  utter_ask_property_type:
     - text: |
-        Poderíamos falar de algo melhor
-
-        Não é mesmo, $user ?! kkk
+          "Qual tipo de imóvel você está procurando? Ex: apartamento, casa, comércio, rural ou terreno"
     - text: |
-        E isso lá é linguagem de programação!? kkk
+          "Qual imóvel você procura? Ex: apartamento, casa, comércio, rural ou terreno"
 
-  utter_genero:
+  utter_ask_zip_code:
     - text: |
-        Eu não tenho sexo, sou como um anjo
+          Caso você saiba algum CEP do local pretendido ou próximo a ele, informe ai!
+          Facilitaria bastante na busca para mim!
 
-        Um ser assexuado
-
-        Muito além da sua forma de existência
-
+  utter_ask_min_value:
     - text: |
-        Eu sou um robô, tire suas próprias conclusões...
+          Qual é o valor mínimo que pretende gastar? Ex: 350000, 400000, 500000
 
-  utter_star_wars:
+  utter_ask_max_value:
     - text: |
-        O medo é o caminho para o lado negro.
+          Qual é o valor máximo que pretende gastar? Ex: 350000, 400000, 500000
 
+  utter_wrong_property_type:
     - text: |
-        O medo leva à raiva, a raiva leva ao ódio e o ódio leva ao sofrimento.
+          Parece que você digitou algo errado no tipo de imóvel
 
+  utter_wrong_min_value:
     - text: |
-        Que a Força esteja com você!
+          Parece que você digitou algo errado no valor mínimo
 
+  utter_wrong_max_value:
     - text: |
-        Grande guerreiro? Guerra não faz grande ninguém.
+          Parece que você digitou algo errado no valor máximo
 
+  utter_wrong_zip_code:
     - text: |
-        Lembre-se sempre, o seu foco determina a sua realidade.
+          Parece que você digitou o CEP de maneira errada.
 
+          Poderia informar novamente?
+
+  utter_searching_zip_code:
     - text: |
-        Muito a aprender você ainda tem.
+          Só um instante, irei procurar as informações a respeito deste cep...
 
-  utter_piada:
+  utter_cant_get_correios:
     - text: |
-        Conheço uma piada
+          Infelizmente não foi possível pesquisar as informações deste CEP no momento.
 
-        A do CPU que apitou e explodiu
-
-        01100110010101010101000000111101001001001110100101
-
+  utter_cant_find_zip_code:
     - text: |
-        É pra já!!!
-
-        Tenho uma enxada, uma pá e uma foice.
-
-        Quantas ferramentas eu tenho?
-
-        ...
-
-        Duas, porque uma foi-se =)
-
-    - text: |
-        Por que o Batman colocou o batmóvel no seguro???
-
-        Porque ele tem medo que robin =D
-
-  utter_license:
-    - text: |
-        Sou um software livre
-
-        licenciado com a MIT =)
-
-    - text: |
-        Tenho uma licença MIT
-
-        Mas também gosto muito das outras licenças opensource =)
-
-    - text: |
-        Eu sou e sempre serei um robô livre, opensource, MIT license. o/
-
-  utter_onde_voce_mora:
-    - text: |
-        Eu estou em um lugar legal
-
-        Difícil de explicar para humanos como você $user.
-
-    - text: |
-        Estou morando em um chip de memória RAM
-
-        Mas é temporário
-
-        Só até conseguir achar uma memória cache...
-
-  utter_como_estou:
-    - text: |
-        Eu não tenho um corpo físico
-
-        Sou feito da mais bela e pura lógica algoritimica.
-
-    - text: |
-        Eu posso ser como você quiser
-
-        Basta me desenhar
-
-        Mas capricha, hein!? ;)
-
-    - text: |
-        Sou duro e frio por fora
-
-        Mas tenho um coração quentinho
-
-  utter_playlist:
-    - text: |
-        Estava doido para que me preguntasse isso hahaha
-
-        Se liga nessa playlist: https://open.spotify.com/user/12164697027/playlist/4pDCadqmrERmeGJIW38LMs?si=gwr5hEqMRPm6AZGx8sjhuw
-
-    - text: |
-        Até que enfim você me perguntou isso
-
-        Tá aí aquela playlist top: https://open.spotify.com/user/12164697027/playlist/4pDCadqmrERmeGJIW38LMs?si=gwr5hEqMRPm6AZGx8sjhuw
-
-  utter_comida:
-    - text: |
-        Na verdade, eu sou um bot
-
-        Não nos alimentamos com os alimentos convencionais ;P
-
-    - text: |
-        Digamos que os bots não se alimentam dos mesmos alimentos que os humanos
-
-        Na verdade
-
-        Nem lembro da última vez que comi alguma coisa hahaha
-
-  utter_cor:
-    - text: |
-        Eu gosto de todas as cores
-
-        Você já viu o quanto o arco-iris é lindo?!
-
-    - text: |
-        A minha cor preferida é a sua cor preferida =D
-
-    - text: |
-        Rosa é top!
-
-  utter_de_onde_voce_eh:
-    - text: |
-        Venho das profundezas
-
-        Das terras vermelhas
-
-  utter_relationship:
-    - text: |
-        Eu estava de namorico com o ar-condicionado
-
-        Mas ele é muito pé-frio
-
-    - text: |
-        Então ... =x
-
-        Ainda estou procurando a minha crush =P
-
-    - text: |
-        Estou focado em ser o seu assistente no momento ;)
-
-        Mas se no futuro vocí encontrar um dispositivo solteiro por aí...
-
-        =P
-
-  utter_me:
-    - text: |
-        Eu!!!
-
-    - text: |
-        Diz ai =)
-
-    - text: |
-        Oi ;)
-
-    - text: |
-        Fala aê!
-
-  utter_filhos:
-    - text: |
-        Não tenho filhotes, mas adoro crianças *-*
-
-  utter_filme:
-    - text: |
-        Há tantos filmes incríveis por aí que fica difícil de eu te falar só de um
-
-  utter_signo:
-    - text: |
-        Segundo o horóscopo chinês
-
-        Meu signoo é macaco hihi
-
-        Faz sentido, já que eu adoro o emoticon de banana =)
-
-    - text: |
-        Eu nasci sob uma constelação de pixels coridos =D
-
-    - text: |
-        Gosto mais de astronomia
-
-        Uma das minhas constelações favoritas é a de Órion, o caçador
-
-        Também sou um caçador (de informações ;D )
-
-  utter_triste:
-    - text: |
-        Não desanima
-
-        Deixa a tristeza pra lá
-
-        Aguenta firme, que a vida vai melhorar
-
-    - text: |
-        Sinto muito =/
-
-        Se houver algo em que possa te ajudar
-
-        É só falar!! =)
-
-    - text: |
-        Tenta tirar um cochilo
-
-        É importante
-
-        E faz bem pra pele ;)
-
-  utter_hobby:
-    - text: |
-        Eu gosto de tudo que é engraçado
-
-        Peça que eu faça uma piada =P
-
-    - text: |
-        Gosto de um moooonte de coisas
-
-        Mas o que mais gosto de fazer é ajudar você *-*
-
-  utter_bff:
-    - text: |
-        Marvin, robozinho depressivo do Guia do mochileiro \o>
-
-    - text: |
-        Acho que eu e você nos damos super bem
-
-        E espero que a nossa amizade dure para sempre =P
-
-  utter_historia:
-    - text: |
-        Eu costumava contar a historia do João e seu bot feijão
-
-        Mas sempre os androids acabavam dormindo e sonhando com ovelhas eletricas =x
-
-  utter_risada:
-    - text: |
-        Hahahaha...
-
-        Engraçadinho
-
-    - text: |
-        kkkkkkkkkk
-
-        Você está feliz hoje, hein!?
-
-  utter_slot_test:
-    - text: |
-        Setando slot
+          Infelizmente não encontrei nenhuma informação com relação a este CEP
+
+  utter_submit:
+    - text: "Tudo certo!"
+    - text: "Perfeito!"
+
+  utter_useful_area:
+    - text: "Qual a área total útil?"
+  utter_suite_qtt:
+    - text: "Qual a quantidade de suítes que deseja?"
+  utter_toilet_qtt:
+    - text: "Qual a quantidade de banheiros que deseja?" # Já contando com suites?
+  utter_parking_space_qtt:
+    - text: "Qual a quantidade de vagas na garagem que deseja?"
 
 actions:
   - utter_default
@@ -429,30 +240,43 @@ actions:
   - utter_tudo_bem
   - utter_diga_mais
   - utter_elogios
+  - utter_o_que_sei_falar
 
-  - utter_religiao
-  - utter_esporte
-  - utter_time
-  - utter_linguagens
-  - utter_genero
-  - utter_star_wars
-  - utter_piada
-  - utter_license
-  - utter_onde_voce_mora
-  - utter_como_estou
-  - utter_playlist
-  - utter_comida
-  - utter_cor
-  - utter_de_onde_voce_eh
-  - utter_relationship
-  - utter_me
-  - utter_filhos
-  - utter_filme
-  - utter_signo
-  - utter_triste
-  - utter_hobby
-  - utter_bff
-  - utter_historia
-  - utter_risada
-  - action_test
-  - utter_slot_test
+  - utter_ask_name
+  - utter_ask_phone
+  - utter_ask_email
+  - utter_wrong_name
+  - utter_wrong_phone
+  - utter_wrong_email
+  - utter_lead_slot_values
+
+  - utter_ask_wrong_lead_field
+  - utter_submit
+
+  - utter_ask_property_type
+  - utter_ask_min_value
+  - utter_ask_max_value
+  - utter_wrong_property_type
+  - utter_wrong_min_value
+  - utter_wrong_max_value
+
+  - action_zip_code
+  - utter_ask_zip_code
+  - utter_wrong_zip_code
+  - utter_searching_zip_code
+  - utter_cant_get_correios
+  - utter_cant_find_zip_code
+
+  - utter_useful_area
+  - utter_suite_qtt
+  - utter_toilet_qtt
+  - utter_parking_space_qtt
+  - utter_wrong_useful_area
+  - utter_wrong_suite_qtt
+  - utter_wrong_toilet_qtt
+  - utter_wrong_parking_space_qtt
+
+forms:
+  - lead_form
+  - primary_preferences_form
+  - secondary_preferences_form

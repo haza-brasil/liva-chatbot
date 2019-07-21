@@ -5,6 +5,7 @@ import time
 
 from typing import Text
 from flask import Blueprint, request, jsonify, make_response
+
 from rasa_core.channels.channel import UserMessage, OutputChannel, InputChannel
 
 logger = logging.getLogger(__name__)
@@ -16,10 +17,10 @@ class RocketChatBot(OutputChannel):
         return "rocketchat"
 
     def __init__(self, user, password, server, ssl=False):
-        from rocketchat_py_sdk.driver import Driver
+        from .driver import RocketChatDriver
 
         self.username = user
-        self.connector = Driver(url=server, ssl=ssl)
+        self.connector = RocketChatDriver(url=server, ssl=ssl)
         self.users = {}
         self.user = user
         self.password = password

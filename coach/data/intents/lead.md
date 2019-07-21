@@ -1,0 +1,58 @@
+## intent:i_wanna_buy
+- quero comprar um [apartamento](property_type)
+- Quero comprar uma [casa](property_type)
+- gostaria de comprar um [ap](property_type)
+- desejo comprar um [terreno](property_type)
+- almejo um [comércio](property_type)
+- necessito de uma área [rural](property_type)
+- preciso de uma [casa rural](property_type)
+- gostaria de comprar um [apartamento](property_type)
+
+## intent:wrong_lead_field
+- meu [nome](wrong_field)
+- Meu [telefone](wrong_field)
+- [nome](wrong_field)
+- [telefone](wrong_field)
+- [email](wrong_field)
+- o [e-mail](wrong_field)
+- O [telefone](wrong_field)
+- [email](wrong_field)
+- [tel](wrong_field)
+- meu [e-mail](wrong_field) está errado
+- Errei meu [email](wrong_field)
+
+## intent:inform_data
+- meu cep é [19044-105](zip_code)
+- o CEP é [35702-433](zip_code)
+- [65076645](zip_code) é o cep
+- cep que gostaria eh [77423-505](zip_code)
+- [49088-255](zip_code)
+- [50791-462](zip_code)
+- [76828-510](zip_code)
+- [23830-330](zip_code)
+- [59604-250](zip_code)
+- [66640-696](zip_code)
+- [64004-620](zip_code)
+- [75528-269](zip_code)
+- [58073-444](zip_code)
+- [73805-690](zip_code)
+- [49042-550](zip_code)
+- [13456580](zip_code)
+- [58401562](zip_code)
+- [82900520](zip_code)
+- [76874096](zip_code)
+- [40279560](zip_code)
+- [87200061](zip_code)
+- [86812763](zip_code)
+- [88047470](zip_code)
+- [76873 386](zip_code)
+- [65055 278](zip_code)
+- [69303 485](zip_code)
+- [37002 140](zip_code)
+- [89163 360](zip_code)
+- [76914 730](zip_code)
+- [78058 024](zip_code)
+- [89260 675](zip_code)
+
+## regex:zip_code
+- \b[\d]{5}([\d]{3}|-[\d]{3}|\s[\d]{3})\b

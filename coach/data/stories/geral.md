@@ -20,10 +20,6 @@
 * out_of_scope
     - utter_default
 
-## negar sem contexto
-* negar
-    - utter_despedir
-
 ## elogios
 * elogios
     - utter_elogios
@@ -38,6 +34,6 @@
 * cumprimentar
     - utter_cumprimentar
 
-## Set Slot
-* slot_test
-    - utter_slot_test
+## O que sei falar
+* o_que_sei_falar
+    - utter_o_que_sei_falar
