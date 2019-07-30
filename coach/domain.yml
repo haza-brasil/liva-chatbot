@@ -1,20 +1,24 @@
 intents:
-  - i_wanna_buy
-  - cumprimentar
-  - despedir
+  - greet
+  - ask_how_doing
+  - greet+ask_how_doing
+  - bye
+  - explain
+  - what_know_about
 
   - out_of_scope
-  - diga_mais
-  - tudo_bem
   - elogios
+
   - affirm
   - deny
 
+  - i_wanna_buy
+  - i_wanna_sell
+  - i_wanna_rent
   - inform_data
 
-  - o_que_sei_falar
-
 entities:
+  - trading_type
   - name
   - phone
   - email
@@ -31,7 +35,13 @@ entities:
   - parking_space_qtt
 
 slots:
+  requested_slot:
+    type: unfeaturized
   hostname:
+    type: unfeaturized
+  nickname:
+    type: unfeaturized
+  trading_type:
     type: unfeaturized
   name:
     type: unfeaturized
@@ -61,8 +71,6 @@ slots:
     type: unfeaturized
   parking_space_qtt:
     type: unfeaturized
-  requested_slot:
-    type: unfeaturized
 
 templates:
   utter_default:
@@ -79,186 +87,217 @@ templates:
     - text: |
         Vamos tentar mais uma vez? Eu não consegui te entender direito, me pergunta de outro jeito?
 
-  utter_diga_mais:
+  utter_greet:
     - text: |
-        Por enquanto, só entendo perguntas completas.
+        Oi, sou uma assistente virtual que te ajudará na sua jornada de compra, me chamo Liva.
+
+  utter_ask_how_doing:
+    - text: |
+        Tudo bem, obrigada! Em que posso te ajudar?
+
+  utter_greet_ask_how_doing:
+    - text: |
+        Oi, sou uma assistente virtual que te ajudará a encontrar o imóvel ideal, me chamo Liva.
+
+        Estou ótima, obrigada por perguntar! Em que poderia ajudar?
+
+  utter_what_know_about:
+    - text: |
+        No momento eu só consigo te orientar a montar seu perfil de busca para
+        a compra de um imóvel. (ex: quero comprar um apartamento)
+
+        Agora que você já sabe do que podemos conversar, vou te dar outras dicas...
+
+        Eu consigo te entender melhor quando você me faz perguntas curtas
+        e me manda uma pergunta de cada vez.
+
+        Assim... espera eu te responder
+        daí você me manda outra!
+
+  utter_explain_objetive:
+    - text: |
+        Meu objetivo é conseguir montar seu perfil de busca e te direcionar para o meu próprio site,
+        que possui os mesmos imóveis que você procura aqui!
+
+        Realizamos esta parceria objetivando que você encontre mais rapidamente o imóvel que procura
+        e que ele seja o ideal para você.
+
+        O interessante do meu site é que ele possui um sistema de recomendações de imóveis inteligente.
 
   utter_elogios:
     - text: |
-          Obrigada! É sempre bom dar e receber elogios :P
+        Obrigada! É sempre bom dar e receber elogios :P
 
-  utter_cumprimentar:
+  utter_bye:
     - text: |
-          Oi, sou uma assistente virtual que te ajudará na sua jornada de compra, me chamo Liva.
-
-  utter_despedir:
-    - text: |
-          Foi um prazer te ajudar!
-          Sempre que tiver alguma dúvida, volte aqui!
-          Até logo!
+        Foi um prazer te ajudar!
+        Sempre que tiver alguma dúvida, volte aqui!
+        Até logo!
 
     - text: |
-          Foi um prazer te ajudar!
-          Sempre que precisar, volte aqui!
-          Até a próxima!
+        Foi um prazer te ajudar!
+        Sempre que precisar, volte aqui!
+        Até a próxima!
 
     - text: |
-          Foi um prazer te ajudar!
-          Quando surgir alguma dúvida, volte aqui!
-          Até mais!
+        Foi um prazer te ajudar!
+        Quando surgir alguma dúvida, volte aqui!
+        Até mais!
 
-  utter_tudo_bem:
+  utter_greetings_lead:
     - text: |
-          Tudo bem, obrigada! Em que posso te ajudar?
+        Beleza!
 
-  utter_o_que_sei_falar:
+        Primeiramente irei coletar algumas informações pessoais suas
+
     - text: |
-          Veja alguns dos assuntos em que posso te ajudar :)
+        Vamos nessa!
 
-          Quero comprar um imóvel
-          Dúvidas operacionais sobre a execução do projeto (ex: perdi minha senha no SALIC)
-          Ou dúvidas sobre definições e siglas (ex: o que é TAIS?)
-
-          Agora que você já sabe do que podemos conversar, vou te dar outras dicas...
-
-          Eu consigo te entender melhor quando você me faz perguntas curtas
-          e me manda uma pergunta de cada vez.
-
-          Assim... espera eu te responder
-          daí você me manda outra!
-
-          Bom, acho que já falei demais! Agora é sua vez...
-          o que você deseja saber?
+        Irei começar coletando algumas informações pessoais suas
 
   # Lead Form
   utter_ask_name:
-    - text: |
-          "Qual é o seu nome?"
+    - text: "Qual é o seu nome?"
 
   utter_ask_phone:
-    - text: |
-          "Qual é o seu telefone?"
+    - text: "Qual é o seu telefone?"
 
   utter_ask_email:
-    - text: |
-          "Qual é o seu e-mail?"
+    - text: "Qual é o seu e-mail?"
 
   utter_wrong_name:
-    - text: |
-          "Parece que você digitou algo errado no nome"
+    - text: "Parece que você digitou algo errado no nome"
 
   utter_wrong_phone:
-    - text: |
-          "Parece que você digitou algo errado no telefone"
+    - text: "Parece que você digitou algo errado no telefone"
 
   utter_wrong_email:
+    - text: "Parece que você digitou algo errado no e-mail"
+
+  # Primary User Real State Prefences Form
+  utter_ask_property_type:
     - text: |
-          "Parece que você digitou algo errado no e-mail"
+        Qual tipo de imóvel você está procurando? Ex: apartamento, casa, comércio, rural ou terreno
+    - text: |
+        Qual imóvel você procura? Ex: apartamento, casa, comércio, rural ou terreno
+
+  utter_ask_zip_code:
+    - text: |
+        Caso você saiba algum CEP do local pretendido ou próximo a ele, informe ai!
+        Facilitaria bastante na busca para mim!
+
+  utter_ask_min_value:
+    - text: |
+        Qual é o valor mínimo que pretende gastar? Ex: 350000, 400000, 500000
+
+  utter_ask_max_value:
+    - text: |
+        Qual é o valor máximo que pretende gastar? Ex: 350000, 400000, 500000
+
+  utter_wrong_property_type:
+    - text: |
+        Parece que você digitou algo errado no tipo de imóvel
+
+  utter_wrong_min_value:
+    - text: |
+        Parece que você digitou algo errado no valor mínimo
+
+  utter_wrong_max_value:
+    - text: |
+        Parece que você digitou algo errado no valor máximo
+
+  utter_wrong_zip_code:
+    - text: |
+        Parece que você digitou o CEP de maneira errada.
+
+        Poderia informar novamente?
+
+  utter_searching_zip_code:
+    - text: |
+        Só um instante, irei procurar as informações a respeito deste cep...
+
+  utter_cant_get_correios:
+    - text: |
+        Infelizmente não foi possível pesquisar as informações deste CEP no momento.
+
+  utter_cant_find_zip_code:
+    - text: |
+        Infelizmente não encontrei nenhuma informação com relação a este CEP
+
+  # Secondary User Real State Prefences Form
+  utter_ask_useful_area:
+    - text: "Qual a área total útil?"
+
+  utter_ask_suite_qtt:
+    - text: "Qual a quantidade de suítes que deseja?"
+
+  utter_ask_toilet_qtt:
+    - text: "Qual a quantidade de banheiros que deseja?" # Já contando com suites?
+
+  utter_ask_parking_space_qtt:
+    - text: "Qual a quantidade de vagas na garagem que deseja?"
+
+  utter_ask_secondary_informations:
+    - text: |
+        Pronto, seu perfil de busca está praticamente completo.
+
+        Você gostaria de responder algumas perguntas simples para refinar ainda mais?
 
   utter_lead_slot_values:
     - text: "* Nome: {name}\n
              * Telefone: {phone}\n
              * E-mail: {email}\n
+             * Tipo de Imóvel: {property_type}\n
+             * UF: {uf_code}\n
+             * Cidade: {city}\n
+             * Bairro: {neighborhood}\n
+             * Valor Mínimo: {min_value}\n
+             * Valor Máximo: {max_value}\n
              As informações estão corretas?"
-    - text: "* Nome: {name}\n
-             * Telefone: {phone}\n
-             * E-mail: {email}\n
-             Está tudo correto?"
 
-  utter_ask_wrong_lead_field:
-    - text: "Qual campo você digitou errado? Ex: nome, telefone ou e-mail"
-    - text: "Qual campo você deseja informar novamente? Ex: nome, telefone ou e-mail"
-    - text: "Qual informação você deseja corrigir? Ex: nome, telefone ou e-mail"
-
-  # Primary User Real State Prefences Form
-  utter_ask_property_type:
+  utter_sell:
     - text: |
-          "Qual tipo de imóvel você está procurando? Ex: apartamento, casa, comércio, rural ou terreno"
-    - text: |
-          "Qual imóvel você procura? Ex: apartamento, casa, comércio, rural ou terreno"
+        Desculpe, mas no momento só consigo entender assuntos referentes à compra de imóveis.
 
-  utter_ask_zip_code:
-    - text: |
-          Caso você saiba algum CEP do local pretendido ou próximo a ele, informe ai!
-          Facilitaria bastante na busca para mim!
+        No futuro, serei capaz de te auxiliar com vendas.
 
-  utter_ask_min_value:
+  utter_rent:
     - text: |
-          Qual é o valor mínimo que pretende gastar? Ex: 350000, 400000, 500000
+        Lamento, mas no momento só consigo entender assuntos referentes à compra de imóveis.
 
-  utter_ask_max_value:
-    - text: |
-          Qual é o valor máximo que pretende gastar? Ex: 350000, 400000, 500000
+        Futuramente poderei te auxiliar com locação.
 
-  utter_wrong_property_type:
-    - text: |
-          Parece que você digitou algo errado no tipo de imóvel
-
-  utter_wrong_min_value:
-    - text: |
-          Parece que você digitou algo errado no valor mínimo
-
-  utter_wrong_max_value:
-    - text: |
-          Parece que você digitou algo errado no valor máximo
-
-  utter_wrong_zip_code:
-    - text: |
-          Parece que você digitou o CEP de maneira errada.
-
-          Poderia informar novamente?
-
-  utter_searching_zip_code:
-    - text: |
-          Só um instante, irei procurar as informações a respeito deste cep...
-
-  utter_cant_get_correios:
-    - text: |
-          Infelizmente não foi possível pesquisar as informações deste CEP no momento.
-
-  utter_cant_find_zip_code:
-    - text: |
-          Infelizmente não encontrei nenhuma informação com relação a este CEP
+  utter_ask_continue_lead_form:
+    - text: "Você ainda quer continuar com o cadastro?"
+    - text: "Deseja continuar com o cadastro?"
 
   utter_submit:
-    - text: "Tudo certo!"
-    - text: "Perfeito!"
+    - text: |
+        Tudo certo, {nickname}!
 
-  utter_useful_area:
-    - text: "Qual a área total útil?"
-  utter_suite_qtt:
-    - text: "Qual a quantidade de suítes que deseja?"
-  utter_toilet_qtt:
-    - text: "Qual a quantidade de banheiros que deseja?" # Já contando com suites?
-  utter_parking_space_qtt:
-    - text: "Qual a quantidade de vagas na garagem que deseja?"
+        Como ja tenho suas informações pessoas, podemos seguir para o próximo passo
+    - text: |
+        Perfeito, {nickname}!
+
+        Com suas informações pessoas coletadas, já podemos ir para o próximo passo!
 
 actions:
   - utter_default
-  - utter_cumprimentar
-  - utter_despedir
-  - utter_tudo_bem
-  - utter_diga_mais
+  - utter_greet
+  - utter_ask_how_doing
+  - utter_greet_ask_how_doing
+  - utter_bye
+  - utter_explain_objetive
   - utter_elogios
-  - utter_o_que_sei_falar
+  - utter_what_know_about
 
+  - utter_greetings_lead
   - utter_ask_name
   - utter_ask_phone
   - utter_ask_email
   - utter_wrong_name
   - utter_wrong_phone
   - utter_wrong_email
-  - utter_lead_slot_values
-
-  - utter_ask_wrong_lead_field
-  - utter_submit
-
-  - utter_ask_property_type
-  - utter_ask_min_value
-  - utter_ask_max_value
-  - utter_wrong_property_type
-  - utter_wrong_min_value
-  - utter_wrong_max_value
 
   - action_zip_code
   - utter_ask_zip_code
@@ -267,14 +306,28 @@ actions:
   - utter_cant_get_correios
   - utter_cant_find_zip_code
 
-  - utter_useful_area
-  - utter_suite_qtt
-  - utter_toilet_qtt
-  - utter_parking_space_qtt
+  - utter_ask_property_type
+  - utter_ask_min_value
+  - utter_ask_max_value
+  - utter_wrong_property_type
+  - utter_wrong_min_value
+  - utter_wrong_max_value
+  - utter_ask_secondary_informations
+
+  - utter_ask_useful_area
+  - utter_ask_suite_qtt
+  - utter_ask_toilet_qtt
+  - utter_ask_parking_space_qtt
   - utter_wrong_useful_area
   - utter_wrong_suite_qtt
   - utter_wrong_toilet_qtt
   - utter_wrong_parking_space_qtt
+
+  - utter_lead_slot_values
+  - utter_ask_continue_lead_form
+  - utter_submit
+  - utter_sell
+  - utter_rent
 
 forms:
   - lead_form

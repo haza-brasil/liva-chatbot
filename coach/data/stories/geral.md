@@ -1,39 +1,35 @@
-## Despedir
-* despedir
-    - utter_despedir
+## Greet
+* greet
+    - utter_greet
 
-## Oi Tudo Bem Story
-* tudo_bem
-    - utter_tudo_bem
+## How doing
+* ask_how_doing
+    - utter_ask_how_doing
 
-## Oi Tudo Bem Story 1
-* cumprimentar
-    - utter_cumprimentar
-* tudo_bem
-    - utter_tudo_bem
+## Greet + How doing
+* greet
+    - utter_greet
+* ask_how_doing
+    - utter_ask_how_doing
 
-## Nao entendi
-* diga_mais
-    - utter_diga_mais
+## (greet+ask_how_doing)
+* greet+ask_how_doing
+    - utter_greet_ask_how_doing
 
-## fallback
+## Greet + Bye
+* greet
+    - utter_greet
+* bye
+    - utter_bye
+
+## Bye
+* bye
+    - utter_bye
+
+## Out of Scope
 * out_of_scope
     - utter_default
 
 ## elogios
 * elogios
     - utter_elogios
-
-## path 1
-* cumprimentar
-    - utter_cumprimentar
-* despedir
-    - utter_despedir
-
-## path 2
-* cumprimentar
-    - utter_cumprimentar
-
-## O que sei falar
-* o_que_sei_falar
-    - utter_o_que_sei_falar

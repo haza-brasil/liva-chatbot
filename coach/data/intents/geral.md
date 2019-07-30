@@ -5,8 +5,72 @@
 - Vc gosta de carnaval?
 - batatinha quando nasce
 
-## intent:despedir
+## intent:greet
+- com licenca
+- bom dia
+- boa tarde
+- boa noite
+- olá
+- oie
+- oiee
+- opa
+- ola boa tarde
+- oi
+- ola de novo
+- oi amigo
+- olá amiga
+- saudações
+- ola tem alguem aqui?
+- hey
+- vamos conversar
+- oi sou eu de novo
+- pode me tirar uma duvida
+- posso falar com voce
+- gostaria de tirar uma duvida
+
+## intent:ask_how_doing
+- Tudo bem
+- Como vocês esta
+- como vai
+- como vao as coisas
+- tranquilo
+- como ta
+- joia
+- joinha
+- tudo bom
+- Tudo bem e você
+- como vc esta
+- como vai
+- vc está bem?
+- como estao as coisas
+- esta se sentindo bem
+- como esta o seu dia
+- como esta sua manha
+- como esta sua tarde
+- como esta sua noite
+- como a vida está
+- estou bem e vc?
+- estou bem e você
+- ta tudo bem?
+
+## intent:greet+ask_how_doing
+- oi tudo bem
+- oi, como vai voce
+- oi, beleza?
+- ola tudo bem com vc
+- opa tudo bem
+- eai beleza?
+- opa beleza
+- fala ai, tranquilo?
+- oi amigo, tudo bem
+- fala amiga, beleza?
+- oi assistente, tudo beleza?
+
+## intent:bye
 - Tchau obrigada
+- xau obrigado
+- xau
+- tchau
 - Tchau
 - até logo
 - namaste
@@ -15,37 +79,11 @@
 - até breve
 - falou, valeu
 - flw vlw
-- blza
-- blz
-- valeu
-- de boa
 - obrigada
 - obrigado
-- obj
-
-## intent:cumprimentar
-- oi, tudo bem
-- como vai
-- oi, como vai voce
-- como vao as coisas
-- com licenca
-- tudo bom
-- posso falar com voce
-- pode me tirar uma duvida
-- gostaria de tirar uma duvida
-- to bem
-- tranquilo
-- estou bem
-- estou otimo
-- muito bem
-- bom dia
-- boa tarde
-- boa noite
-- olá
-- oie
-- oiee
-- opa tudo bem
-- ola boa tarde
+- preciso ir nessa
+- falo com vc depois
+- adeus
 
 ## intent:elogios
 - Você é muito educado!
@@ -53,47 +91,38 @@
 - Me ajudou muito
 - vc eh linda
 
-## intent:diga_mais
+## intent:explain
 - como funciona
 - me diga mais
 - não entendi
-- nao entendi
-- não é isso
-- nao eh isso
+- Nao entendi
+- não consegui entender
+- nao consigo entender isso
+- não entendo
+- o que é isso
 - como assim
 - e como funciona
 - nao tenho certeza
-
-## intent:tudo_bem
-- Tudo bem
-- Como vocês esta
-- como ta
-- joia
-- joinha
-- tudo bom
-- bom dia flor do dia
-- Tudo bem e você
-- como vc esta
-- como vai
-
-## intent:o_que_sei_falar
-- sobre o que você sabe falar
-- o que mais você sabe falar
-- quais assuntos você fala
-- o que você sabe
-- lista de assuntos possiveis
-- quais as perguntas vc responde
-- quais as perguntas você responde
-- quero ajuda
-- meajuda
-- meajude
-- MEAJUD
-- MEAJDA
-- me ajuda
-- me ajude
-- ajuda eu
-- ajuda
-- menu
+- diga mais
+- explica ai
+- explica melhor
+- explica com outras palavras
+- poderia por favor explicar melhor
+- pq
+- pq?
+- por que?
+- por quê?
+- porque?
+- porque é isso?
+- porque precisa disso
+- pq precisa disso
+- poderia me falar mais
+- me fale a diferença
+- quero mais informações
+- quero saber mais
+- gostaria de entender mais um pouco
+- pode falar melhor?
+- qual a diferença
 
 ## intent:affirm
 - sim
@@ -110,7 +139,7 @@
 - estao
 - estão
 - sim estão corretas
-- Sim estao
+- Sim, estao
 - si
 - sim está correto
 - com certeza
@@ -122,11 +151,17 @@
 - S
 - obvio
 - obvio que sim
+- gostaria
+- gostaria sim
+- tenho interesse
+- isso
 
 ## intent:deny
 - nao, obrigado
 - não obrigado
 - nao valeu
+- n vlw
+- nao vlw
 - ñ
 - n
 - nao
@@ -142,3 +177,4 @@
 - nao estao
 - não está
 - nao esta correto
+- nao ta certo

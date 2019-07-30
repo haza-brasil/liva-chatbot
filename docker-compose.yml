@@ -137,7 +137,6 @@ services:
     volumes:
       - ./kibanaweb/postgres-data:/var/lib/postgresql/data
 
-
 volumes:
   esdata:
     driver: local

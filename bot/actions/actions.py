@@ -147,8 +147,24 @@ class LeadForm(FormAction):
                dispatcher: CollectingDispatcher,
                tracker: Tracker,
                domain: Dict[Text, Any],) -> List[Dict]:
-        dispatcher.utter_template("utter_submit", tracker)
-        return []
+        nickname = tracker.get_slot("name").split(" ")[0].capitalize()
+
+        dispatcher.utter_template("utter_submit", tracker, nickname=nickname)
+
+        events = []
+
+        slot_nickname = tracker.get_slot("nickname")
+
+        if slot_nickname != nickname:
+            events.append(SlotSet("nickname", nickname))
+
+        return events
+
+    def run(self, dispatcher, tracker, domain):
+        if not tracker.get_slot("name") and not tracker.get_slot("requested_slot"):
+            dispatcher.utter_template("utter_greetings_lead", tracker)
+
+        return super(LeadForm, self).run(dispatcher, tracker, domain)
 
 
 class PrimaryPreferencesForm(FormAction):
@@ -225,6 +241,8 @@ class PrimaryPreferencesForm(FormAction):
                dispatcher: CollectingDispatcher,
                tracker: Tracker,
                domain: Dict[Text, Any],) -> List[Dict]:
+        dispatcher.utter_template("utter_ask_secondary_informations", tracker)
+
         return []
 
 
@@ -242,8 +260,60 @@ class SecondaryPreferencesForm(FormAction):
             "useful_area": self.from_text(),
             "suite_qtt": self.from_text(),
             "toilet_qtt": self.from_text(),
-            "parking_space_qtt": self.from_text()
+            "parking_space_qtt": self.from_text(),
         }
+
+    def validate_useful_area(
+        self,
+        value: Text,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any],
+    ) -> Optional[Text]:
+        if value:
+            return {"useful_area": value}
+        else:
+            dispatcher.utter_template("utter_wrong_useful_area", tracker)
+            return {"useful_area": None}
+
+    def validate_suite_qtt(
+        self,
+        value: Text,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any],
+    ) -> Optional[Text]:
+        if value:
+            return {"suite_qtt": value}
+        else:
+            dispatcher.utter_template("utter_wrong_suite_qtt", tracker)
+            return {"suite_qtt": None}
+
+    def validate_toilet_qtt(
+        self,
+        value: Text,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any],
+    ) -> Optional[Text]:
+        if value:
+            return {"toilet_qtt": value}
+        else:
+            dispatcher.utter_template("utter_wrong_toilet_qtt", tracker)
+            return {"toilet_qtt": None}
+
+    def validate_parking_space_qtt(
+        self,
+        value: Text,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any],
+    ) -> Optional[Text]:
+        if value:
+            return {"parking_space_qtt": value}
+        else:
+            dispatcher.utter_template("utter_wrong_parking_space_qtt", tracker)
+            return {"parking_space_qtt": None}
 
     def submit(self,
                dispatcher: CollectingDispatcher,
