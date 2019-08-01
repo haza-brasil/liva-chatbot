@@ -49,39 +49,38 @@ services:
     image: bot
     build:
       context: .
-      dockerfile: ./docker/bot.Dockerfile
+      dockerfile: ./docker/bot/bot.Dockerfile
     restart: unless-stopped
-    command: make run-rocketchat
     env_file:
-      - docker/bot.env
+      - docker/bot/bot.env
     ports:
       - 5005:5005
     depends_on:
-      - actions
+      # - actions
       - mongo
     volumes:
       - ./bot:/bot
       - ./scripts:/scripts
-    command: sh -c "make run-rocketchat"
+    command: make rasa-run-debug
 
   actions:
     build:
       context: .
-      dockerfile: ./docker/actions.Dockerfile
+      dockerfile: ./docker/actions/actions.Dockerfile
     ports:
       - 5055:5055
     volumes:
       - ./bot/actions:/bot/actions
       - ./bot/Makefile:/bot/Makefile
-    command: sh -c "make run-actions"
+    command: make run-actions
 
   # =============================== Notebooks =================================
   notebooks:
     build:
       context: .
-      dockerfile: ./docker/notebooks.Dockerfile
+      dockerfile: ./docker/notebooks/notebooks.Dockerfile
     env_file:
-      - docker/notebooks.env
+      - docker/notebooks/notebooks.env
     volumes:
       - ./bot:/work/bot
       - ./notebooks:/work/notebooks
@@ -92,7 +91,7 @@ services:
   elasticsearch:
     build:
       context: .
-      dockerfile: ./docker/elasticsearch.Dockerfile
+      dockerfile: ./docker/elasticsearch/elasticsearch.Dockerfile
     restart: unless-stopped
     ports:
       - 9200:9200
@@ -118,7 +117,7 @@ services:
   kibana-web:
     build:
       context: .
-      dockerfile: ./docker/kibana/kibana-web.Dockerfile
+      dockerfile: ./docker/kibanaweb/kibana-web.Dockerfile
     restart: unless-stopped
     environment:
       - PORT=8080

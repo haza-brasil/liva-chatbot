@@ -1,11 +1,25 @@
-run-rocketchat:
-	python3 run-rocketchat.py
+train:
+	rasa train --fixed-model-name current --verbose
 
-run-telegram:
-	python -m rasa_core.run -d /models/dialogue -u /models/nlu/current --port 5001 --credentials credentials.yml --endpoints endpoints.yml
+run-shell:
+	rasa shell --endpoints endpoints_shell.yml --debug
+
+run-actions:
+	rasa run actions --actions actions
+
+rasa-run:
+	rasa run --endpoints endpoints.yml
+
+rasa-run-debug:
+	rasa run --endpoints endpoints.yml --debug
 
 config-rocket:
 	python /scripts/bot_config.py
+
+
+
+run-telegram:
+	python -m rasa_core.run -d /models/dialogue -u /models/nlu/current --port 5001 --credentials credentials.yml --endpoints endpoints.yml
 
 run-console:
 	python3 -m rasa_core.run -d /models/dialogue -u /models/nlu/current \
@@ -17,6 +31,3 @@ run-api:
 
 evaluate:
 	python3 -m rasa_core.evaluate -d /models/dialogue -s data/core/
-
-run-actions:
-	python -m rasa_core_sdk.endpoint --actions actions

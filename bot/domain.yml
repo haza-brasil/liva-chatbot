@@ -155,6 +155,11 @@ templates:
 
         Irei começar coletando algumas informações pessoais suas
 
+    - text: |
+        Vamos lá!
+
+        Primeiramente irei precisar de algumas informações básicas suas
+
   # Lead Form
   utter_ask_name:
     - text: "Qual é o seu nome?"
@@ -237,6 +242,18 @@ templates:
   utter_ask_parking_space_qtt:
     - text: "Qual a quantidade de vagas na garagem que deseja?"
 
+  utter_wrong_useful_area:
+    - text: "Parece que você informou algo errado na quantidade de vagas de garagem"
+
+  utter_wrong_suite_qtt:
+    - text: "Parece que você informou algo errado na quantidade suítes"
+
+  utter_wrong_toilet_qtt:
+    - text: "Parece que você informou algo errado na quantidade de banheiros"
+
+  utter_wrong_parking_space_qtt:
+    - text: "Parece que você informou algo errado na quantidade de vagas de garagem"
+
   utter_ask_secondary_informations:
     - text: |
         Pronto, seu perfil de busca está praticamente completo.
@@ -267,6 +284,10 @@ templates:
 
         Futuramente poderei te auxiliar com locação.
 
+  utter_cant_signup:
+    - text: "Infelizmente não podemos continuar sem suas informações"
+    - text: "Para que possa te auxiliar, preciso de suas informações"
+
   utter_ask_continue_lead_form:
     - text: "Você ainda quer continuar com o cadastro?"
     - text: "Deseja continuar com o cadastro?"
@@ -280,6 +301,11 @@ templates:
         Perfeito, {nickname}!
 
         Com suas informações pessoas coletadas, já podemos ir para o próximo passo!
+
+  utter_great:
+    - text: "Beleza!"
+    - text: "Maravilha!"
+    - text: "Ótimo!"
 
 actions:
   - utter_default
@@ -298,6 +324,7 @@ actions:
   - utter_wrong_name
   - utter_wrong_phone
   - utter_wrong_email
+  - utter_submit
 
   - action_zip_code
   - utter_ask_zip_code
@@ -324,8 +351,10 @@ actions:
   - utter_wrong_parking_space_qtt
 
   - utter_lead_slot_values
+  - utter_cant_signup
   - utter_ask_continue_lead_form
-  - utter_submit
+  - utter_great
+
   - utter_sell
   - utter_rent
 

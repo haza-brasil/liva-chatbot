@@ -6,12 +6,12 @@ import unidecode
 
 from typing import Dict, Text, Any, List, Union, Optional
 
-from rasa_core.utils import configure_colored_logging
+from rasa.utils.io import configure_colored_logging
 
-from rasa_core_sdk import Action, Tracker
-from rasa_core_sdk.events import SlotSet
-from rasa_core_sdk.executor import CollectingDispatcher
-from rasa_core_sdk.forms import FormAction
+from rasa_sdk import Action, Tracker
+from rasa_sdk.forms import FormAction
+from rasa_sdk.events import SlotSet
+from rasa_sdk.executor import CollectingDispatcher
 
 logger = logging.getLogger(__name__)
 configure_colored_logging(loglevel='DEBUG')

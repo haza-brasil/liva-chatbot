@@ -4,9 +4,10 @@ import os
 import time
 
 from typing import Text
-from flask import Blueprint, request, jsonify, make_response
+from sanic import Blueprint
+from sanic.response import json
 
-from rasa_core.channels.channel import UserMessage, OutputChannel, InputChannel
+from rasa.core.channels.channel import UserMessage, OutputChannel, InputChannel
 
 logger = logging.getLogger(__name__)
 
@@ -17,10 +18,10 @@ class RocketChatBot(OutputChannel):
         return "rocketchat"
 
     def __init__(self, user, password, server, ssl=False):
-        from .driver import RocketChatDriver
+        from rocketchat_py_sdk.driver import Driver
 
         self.username = user
-        self.connector = RocketChatDriver(url=server, ssl=ssl)
+        self.connector = Driver(url=server, ssl=ssl)
         self.users = {}
         self.user = user
         self.password = password
@@ -53,12 +54,12 @@ class RocketChatBot(OutputChannel):
     """
     Messages handlers
     """
-    def send_text_message(self, recipient_id, message):
+    async def send_text_message(self, recipient_id, text, **kwargs):
         if recipient_id not in self.users:
             self.users[recipient_id] = RocketchatHandleMessages(recipient_id,
                                                                 self)
 
-        for message_part in message.split("\n\n"):
+        for message_part in text.split("\n\n"):
             self.users[recipient_id].add_message(message_part)
 
 
@@ -88,22 +89,15 @@ class RocketChatInput(InputChannel):
         self.output_channel = RocketChatBot(
             self.user, self.password, self.server_url)
 
-    def send_message(self, text, sender_name, recipient_id, on_new_message):
-        if sender_name != self.user:
-            user_msg = UserMessage(text, self.output_channel,
-                                   recipient_id, input_channel=self.name())
-
-            on_new_message(user_msg)
-
     def blueprint(self, on_new_message):
         rocketchat_webhook = Blueprint('rocketchat_webhook', __name__)
 
         @rocketchat_webhook.route("/", methods=['GET'])
-        def health():
-            return jsonify({"status": "ok"})
+        async def health(request):
+            return json({'status': 200})
 
         @rocketchat_webhook.route("/webhook", methods=['GET', 'POST'])
-        def webhook():
+        async def webhook(request):
             if request.json:
                 output = request.json
 
@@ -113,15 +107,20 @@ class RocketChatInput(InputChannel):
                     recipient_id = output.get("channel_id", None)
                 else:
                     messages_list = output.get("messages", None)
-                    text = messages_list[0].get("msg", None)
-                    sender_name = messages_list[0].get("username", None)
 
+                    sender_name = messages_list[0].get("username", None)
+                    text = messages_list[0].get("msg", None)
                     recipient_id = output.get("_id")
 
-                self.send_message(text, sender_name,
-                                  recipient_id, on_new_message)
+                if sender_name != self.user:
+                    user_msg = UserMessage(text,
+                                           self.output_channel,
+                                           recipient_id,
+                                           input_channel=self.name())
 
-            return make_response()
+                    await on_new_message(user_msg)
+
+            return json({'status': 200})
 
         return rocketchat_webhook
 

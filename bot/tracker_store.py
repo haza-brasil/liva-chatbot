@@ -4,8 +4,9 @@ import datetime
 import hashlib
 import json
 
-from rasa_core.tracker_store import MongoTrackerStore
-from rasa_core.trackers import EventVerbosity
+from rasa.core.events import SlotSet
+from rasa.core.tracker_store import MongoTrackerStore
+from rasa.core.trackers import EventVerbosity
 
 try:
     from nltk.corpus import stopwords
@@ -30,11 +31,11 @@ def gen_id(timestamp):
 
 
 class CustomMongoTrackerStore(MongoTrackerStore):
-    def __init__(self, m_domain, e_domain, e_user=None,
+    def __init__(self, domain, url, e_domain, e_user=None,
                  e_password=None, e_scheme='http', e_scheme_port=80):
         super(CustomMongoTrackerStore, self).__init__(
-            domain=m_domain,
-            host="mongodb://" + m_domain)
+            domain=domain,
+            host="mongodb://" + url)
 
         # ElasticSearch Integration
         from elasticsearch import Elasticsearch
@@ -170,6 +171,12 @@ class CustomMongoTrackerStore(MongoTrackerStore):
             index -= 1
 
     def save(self, tracker, timeout=None):
+        hostname = self.get_last_hostname(tracker.sender_id)
+
+        # setting hostname unfeaturized slot
+        if tracker.get_slot('hostname') != hostname:
+            tracker.update(SlotSet('hostname', hostname))
+
         super(CustomMongoTrackerStore, self).save(tracker)
 
         conversation = tracker.current_state(EventVerbosity.ALL)

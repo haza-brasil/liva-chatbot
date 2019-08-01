@@ -2,9 +2,6 @@ FROM requirements:latest
 
 ADD ./bot/actions/actions.py /bot/actions/actions.py
 ADD ./bot/Makefile /bot/Makefile
-ADD ./docker/requirements.txt ./requirements.txt
-
-RUN pip3 install -r requirements.txt
 
 WORKDIR bot/
 
