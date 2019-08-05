@@ -1,7 +1,7 @@
 train:
 	rasa train --fixed-model-name current --verbose
 
-run-shell:
+shell:
 	rasa shell --endpoints endpoints_shell.yml --debug
 
 run-actions:
@@ -20,10 +20,6 @@ config-rocket:
 
 run-telegram:
 	python -m rasa_core.run -d /models/dialogue -u /models/nlu/current --port 5001 --credentials credentials.yml --endpoints endpoints.yml
-
-run-console:
-	python3 -m rasa_core.run -d /models/dialogue -u /models/nlu/current \
-  --debug --endpoints endpoints.yml
 
 run-api:
 	python3 -m rasa_core.run -d /models/dialogue -u /models/nlu/current --debug \

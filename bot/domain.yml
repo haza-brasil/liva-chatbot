@@ -15,24 +15,21 @@ intents:
   - i_wanna_buy
   - i_wanna_sell
   - i_wanna_rent
-  - inform_data
+
+  - lead_data
+  - inform_preferences
 
 entities:
-  - trading_type
-  - name
-  - phone
+  # Duckling entities
+  - phone-number
   - email
+  - amount-of-money
+  - number
+
+  - trading_type
   - property_type
+  - name
   - zip_code
-  - uf_code
-  - city
-  - neighborhood
-  - min_value
-  - max_value
-  - useful_area
-  - suite_qtt
-  - toilet_qtt
-  - parking_space_qtt
 
 slots:
   requested_slot:
@@ -114,6 +111,10 @@ templates:
         Assim... espera eu te responder
         daí você me manda outra!
 
+  utter_anything_else:
+    - text: |
+        Algo mais que possa te ajudar?
+
   utter_explain_objetive:
     - text: |
         Meu objetivo é conseguir montar seu perfil de busca e te direcionar para o meu próprio site,
@@ -179,6 +180,37 @@ templates:
   utter_wrong_email:
     - text: "Parece que você digitou algo errado no e-mail"
 
+  utter_submit:
+    - text: |
+        Tudo certo, {nickname}!
+
+        Como ja tenho suas informações pessoais, podemos seguir para o próximo passo
+    - text: |
+        Perfeito, {nickname}!
+
+        Com suas informações pessoais coletadas, já podemos ir para o próximo passo!
+
+  # Zip Code Form
+  utter_ask_zip_code:
+    - text: |
+        Poderia informar o CEP do local pretendido ou próximo a ele?
+
+  utter_wrong_zip_code:
+    - text: |
+        Parece que você digitou o CEP de maneira errada.
+
+  utter_searching_zip_code:
+    - text: |
+        Só um instante, irei procurar as informações a respeito deste cep...
+
+  utter_cant_get_correios:
+    - text: |
+        Infelizmente não foi possível pesquisar as informações deste CEP no momento.
+
+  utter_cant_find_zip_code:
+    - text: |
+        Infelizmente não encontrei nenhuma informação com relação a este CEP
+
   # Primary User Real State Prefences Form
   utter_ask_property_type:
     - text: |
@@ -186,18 +218,13 @@ templates:
     - text: |
         Qual imóvel você procura? Ex: apartamento, casa, comércio, rural ou terreno
 
-  utter_ask_zip_code:
-    - text: |
-        Caso você saiba algum CEP do local pretendido ou próximo a ele, informe ai!
-        Facilitaria bastante na busca para mim!
-
   utter_ask_min_value:
     - text: |
-        Qual é o valor mínimo que pretende gastar? Ex: 350000, 400000, 500000
+        Qual é o valor mínimo que pretende gastar? Ex: 100.000, 100 mil reais, 1 milhão
 
   utter_ask_max_value:
     - text: |
-        Qual é o valor máximo que pretende gastar? Ex: 350000, 400000, 500000
+        Qual é o valor máximo que pretende gastar? Ex: 100.000, 100 mil reais, 1 milhão
 
   utter_wrong_property_type:
     - text: |
@@ -211,23 +238,11 @@ templates:
     - text: |
         Parece que você digitou algo errado no valor máximo
 
-  utter_wrong_zip_code:
+  utter_ask_secondary_informations:
     - text: |
-        Parece que você digitou o CEP de maneira errada.
+        Pronto, seu perfil de busca está praticamente completo.
 
-        Poderia informar novamente?
-
-  utter_searching_zip_code:
-    - text: |
-        Só um instante, irei procurar as informações a respeito deste cep...
-
-  utter_cant_get_correios:
-    - text: |
-        Infelizmente não foi possível pesquisar as informações deste CEP no momento.
-
-  utter_cant_find_zip_code:
-    - text: |
-        Infelizmente não encontrei nenhuma informação com relação a este CEP
+        Você gostaria de responder algumas perguntas simples para refinar ainda mais?
 
   # Secondary User Real State Prefences Form
   utter_ask_useful_area:
@@ -243,7 +258,7 @@ templates:
     - text: "Qual a quantidade de vagas na garagem que deseja?"
 
   utter_wrong_useful_area:
-    - text: "Parece que você informou algo errado na quantidade de vagas de garagem"
+    - text: "Parece que você informou algo errado na área total útil"
 
   utter_wrong_suite_qtt:
     - text: "Parece que você informou algo errado na quantidade suítes"
@@ -254,14 +269,9 @@ templates:
   utter_wrong_parking_space_qtt:
     - text: "Parece que você informou algo errado na quantidade de vagas de garagem"
 
-  utter_ask_secondary_informations:
-    - text: |
-        Pronto, seu perfil de busca está praticamente completo.
-
-        Você gostaria de responder algumas perguntas simples para refinar ainda mais?
-
   utter_lead_slot_values:
-    - text: "* Nome: {name}\n
+    - text: "* Tipo de negocioação: {trading_type}\n
+             * Nome: {name}\n
              * Telefone: {phone}\n
              * E-mail: {email}\n
              * Tipo de Imóvel: {property_type}\n
@@ -270,7 +280,23 @@ templates:
              * Bairro: {neighborhood}\n
              * Valor Mínimo: {min_value}\n
              * Valor Máximo: {max_value}\n
-             As informações estão corretas?"
+             * Área útil: {useful_area}\n
+             * Suítes: {suite_qtt}\n
+             * Banheiros: {toilet_qtt}\n
+             * Garagens: {parking_space_qtt}"
+
+  utter_cant_signup:
+    - text: "Infelizmente não podemos continuar sem suas informações"
+    - text: "Para que possa te auxiliar, preciso de suas informações"
+
+  utter_ask_continue_lead_form:
+    - text: "Você ainda quer continuar com o cadastro?"
+    - text: "Deseja continuar com o cadastro?"
+
+  utter_great:
+    - text: "Beleza!"
+    - text: "Ok!"
+    - text: "Ótimo!"
 
   utter_sell:
     - text: |
@@ -284,38 +310,16 @@ templates:
 
         Futuramente poderei te auxiliar com locação.
 
-  utter_cant_signup:
-    - text: "Infelizmente não podemos continuar sem suas informações"
-    - text: "Para que possa te auxiliar, preciso de suas informações"
-
-  utter_ask_continue_lead_form:
-    - text: "Você ainda quer continuar com o cadastro?"
-    - text: "Deseja continuar com o cadastro?"
-
-  utter_submit:
-    - text: |
-        Tudo certo, {nickname}!
-
-        Como ja tenho suas informações pessoas, podemos seguir para o próximo passo
-    - text: |
-        Perfeito, {nickname}!
-
-        Com suas informações pessoas coletadas, já podemos ir para o próximo passo!
-
-  utter_great:
-    - text: "Beleza!"
-    - text: "Maravilha!"
-    - text: "Ótimo!"
-
 actions:
   - utter_default
   - utter_greet
   - utter_ask_how_doing
   - utter_greet_ask_how_doing
-  - utter_bye
+  - utter_what_know_about
+  - utter_anything_else
   - utter_explain_objetive
   - utter_elogios
-  - utter_what_know_about
+  - utter_bye
 
   - utter_greetings_lead
   - utter_ask_name
@@ -326,7 +330,6 @@ actions:
   - utter_wrong_email
   - utter_submit
 
-  - action_zip_code
   - utter_ask_zip_code
   - utter_wrong_zip_code
   - utter_searching_zip_code
@@ -362,3 +365,4 @@ forms:
   - lead_form
   - primary_preferences_form
   - secondary_preferences_form
+  - zip_code_form

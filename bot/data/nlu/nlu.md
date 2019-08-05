@@ -167,6 +167,8 @@
 - nao
 - não
 - nao quero
+- nao quero mais fazer isso
+- não quero mais
 - nao conheco
 - nunca
 - nao
@@ -178,6 +180,8 @@
 - não está
 - nao esta correto
 - nao ta certo
+- quero sair
+- quero sair daqui
 
 ## intent:what_know_about
 - sobre o que você sabe falar
@@ -207,7 +211,7 @@
 - gostaria de [comprar](trading_type) um [apartamento](property_type)
 - tenho interesse em [comprar](trading_type) uma [casa](property_type)
 - pretendo [compra](trading_type:comprar) um [ap](property_type:apartamento)
-- eu pretendo [mercar](trading_type:comprar) um [apartamento](property_type)
+- eu pretendo [compra](trading_type:comprar) um [apartamento](property_type)
 - intento [obter](trading_type:comprar) um [terreno](property_type)
 - gostaria de [adquirir](trading_type:comprar) [comércio](property_type)
 - cobiço [compra](trading_type:comprar) de um [comercio](property_type)
@@ -253,7 +257,6 @@
 
 ## synonym:comprar
 - adquirir
-- mercar
 - obter
 - compra
 
@@ -273,38 +276,93 @@
 - aluga
 - locar
 
-## intent:inform_data
-- meu cep é [19044-105](zip_code)
-- o CEP é [35702-433](zip_code)
-- [65076645](zip_code) é o cep
-- cep que gostaria eh [77423-505](zip_code)
-- [49088-255](zip_code)
-- [50791-462](zip_code)
-- [76828-510](zip_code)
-- [23830-330](zip_code)
-- [59604-250](zip_code)
-- [66640-696](zip_code)
-- [64004-620](zip_code)
-- [75528-269](zip_code)
-- [58073-444](zip_code)
-- [73805-690](zip_code)
-- [49042-550](zip_code)
-- [13456580](zip_code)
-- [58401562](zip_code)
-- [82900520](zip_code)
-- [76874096](zip_code)
-- [40279560](zip_code)
-- [87200061](zip_code)
-- [86812763](zip_code)
-- [88047470](zip_code)
-- [76873 386](zip_code)
-- [65055 278](zip_code)
-- [69303 485](zip_code)
-- [37002 140](zip_code)
-- [89163 360](zip_code)
-- [76914 730](zip_code)
-- [78058 024](zip_code)
-- [89260 675](zip_code)
+## intent:lead_data
+- [Brenddon](name)
+- meu nome é [Alfrego Nunes](name)
+- meu nome eh [Luis Cavalcanti Fernandes](name)
+- me chamo [Emily Azevedo Santos](name)
+- [Samuel Gomes Castro](name)
+- [Raissa Silva Martins](name)
+- [Lucas Carvalho Rocha](name)
+- [Maria Melo Pinto](name)
+- [Gabriela Martins Correia](name)
+- [Bruna Ribeiro Azevedo](name)
+- [Kai Rocha Almeida](name)
+- [Tomás Pinto Gomes](name)
+- [André Almeida Silva](name)
+- [Lara Araujo](name)
+- [Rodrigo Barros](name)
+- [Aline Melo](name)
+- [Kai Costa](name)
+- [Camila Azevedo](name)
+- [Kaua Barbosa](name)
+- [Clara Araujo](name)
+- [Giovana](name)
+- [Breno](name)
+- [Alice](name)
+- [Leonor](name)
+- [João](name)
+- [Victor](name)
+- [Márcio](name)
+- fisteltj@tieungoc.life
+- jshamen@us.adultvidlite.com
+- ikayseekellu@outlook.com
+- bmedo.dragoste00d@bol.com.br
+- wmalek.namouchi.g@yahoo.com.br
+- ivleba@yahoo.com.br
+- dmahmoud@hotmail.com
+- tabdallah.be@hotmail.com
+- hmoktardz3l@gmail.com
+- qpgytautasi@gmail.com
+- crietmanhf@gmail.com
+- (42) 98150-1566
+- (27) 96033-3154
+- (17) 92245-8567
+- (47) 3066-2330
+- (68) 91911-5345
+- (68) 91088-9172
+- 92135-2203
+- 95638-1925
+- 98437-7508
+- 94464-8810
+- 92551-9539
+- 945238442
+- 946381594
+- 22 951325746
+- 42 24961351
+- 21 5863-6455
 
-## regex:zip_code
-- \b[\d]{5}([\d]{3}|-[\d]{3}|\s[\d]{3})\b
+## intent:inform_preferences
+- 20 mil reais
+- 50 mil
+- 1 milhão
+- uns 100 mil reais
+- acho que uns 300 mil
+- creio que 250000
+- quero gastar R$ 750.000
+- R$ 600000
+- 400k
+- 3 milhões
+- pretendo gastar 700 mil reais
+- 50m²
+- 100 metros quadrados
+- 70 metros
+- 68 metros de area util
+- pelo menos uns 80m
+- uns setenta e cinco metros
+- cinquenta metros quadrados
+- 1 suite
+- duas
+- uma suite
+- cinco suítes
+- 5 suítes
+- gostaria de 3 suites
+- 2 banheiros
+- 4 banheiro
+- tenho interesse em pelo menos 2 banheiros
+- um banheiro
+- dois banheiros
+- 1 garagem
+- uma garagem
+- duas garagens
+- quero 1 garagem

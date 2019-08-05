@@ -1,24 +1,41 @@
 language : "pt"
 pipeline:
-  - name: "WhitespaceTokenizer"
-  - name: "RegexFeaturizer"
-  - name: "CRFEntityExtractor"
-  - name: "EntitySynonymMapper"
-  - name: "CountVectorsFeaturizer"
-  - name: "EmbeddingIntentClassifier"
+  - name: WhitespaceTokenizer
+  - name: RegexFeaturizer
+  - name: CRFEntityExtractor
+    features:
+      - - low
+        - title
+      - - bias
+        - prefix2
+        - digit
+        - suffix2
+      - - suffix5
+  - name: DucklingHTTPExtractor
+    url: http://duckling:8000
+    locale: pt_BR
+    dimensions:
+      - phone-number
+      - email
+      - amount-of-money
+      - number
+      - distance
+    timezone: America/Sao_Paulo
+  - name: EntitySynonymMapper
+  - name: CountVectorsFeaturizer
+  - name: EmbeddingIntentClassifier
     intent_tokenization_flag: true
-    intent_split_symbol: "+"
+    intent_split_symbol: +
 
 policies:
   - name: KerasPolicy
-    epochs: 20
-    batch_size: 10
-    featurizer:
-      - name: FullDialogueTrackerFeaturizer
-        state_featurizer:
-          - name: LabelTokenizerSingleStateFeaturizer
+    max_history: 10
+    core_threshold: 0.4
+    nlu_threshold: 0.3
+    rnn_size: 16
+    epochs: 50
+    state_featurizer:
+      - name: LabelTokenizerSingleStateFeaturizer
   - name: FallbackPolicy
-    nlu_threshold: 0.6
-    core_threshold: 0.6
   - name: MemoizationPolicy
   - name: FormPolicy

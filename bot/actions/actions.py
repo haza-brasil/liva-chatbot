@@ -17,55 +17,87 @@ logger = logging.getLogger(__name__)
 configure_colored_logging(loglevel='DEBUG')
 
 
-class ActionZipCode(Action):
-    def name(self):
-        return "action_zip_code"
+class ZipCodeForm(FormAction):
+    def name(self) -> Text:
+        """Unique identifier of the form"""
 
-    def run(self, dispatcher, tracker, domain):
-        if not tracker.latest_message.get("entities", None):
-            dispatcher.utter_template("utter_wrong_zip_code", tracker)
+        return "zip_code_form"
+
+    @staticmethod
+    def required_slots(tracker: Tracker) -> List[Text]:
+        """A list of required slots that the form has to fill"""
+
+        return ["zip_code"]
+
+    def slot_mappings(self) -> Dict[Text, Union[Dict, List[Dict]]]:
+        return {
+            "zip_code": [self.from_entity(entity="phone-number"),
+                         self.from_text(not_intent="deny"), ],
+        }
+
+    def validate_zip_code(
+        self,
+        value: Text,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any],
+    ) -> Optional[Text]:
+        zip_code_pattern = re.compile(
+            r"\b[\d]{5}([\d]{3}|-[\d]{3}|\s[\d]{3})\b")
+
+        if zip_code_pattern.match(value):
+            return {"zip_code": value}
         else:
-            zip_value = tracker.get_slot("zip_code")
+            dispatcher.utter_template("utter_wrong_zip_code", tracker)
+            return {"zip_code": None}
 
-            # removing any spaces or - from zip code
-            zip_code = ''.join(e for e in zip_value if e.isalnum())
+    def submit(self,
+               dispatcher: CollectingDispatcher,
+               tracker: Tracker,
+               domain: Dict[Text, Any],) -> List[Dict]:
+        zip_code = tracker.get_slot("zip_code")
 
-            dispatcher.utter_template("utter_searching_zip_code", tracker)
+        dispatcher.utter_template("utter_searching_zip_code", tracker)
 
-            events = []
+        events = []
 
-            try:
-                location_request = requests.get(
-                    "https://viacep.com.br/ws/{}/json/".format(zip_code))
-            except Exception as ex:
-                logger.info(ex)
-                dispatcher.utter_template("utter_cant_get_correios", tracker)
-                return events
+        # API liva
 
-            location = json.loads(location_request.text)
-
-            if location.get("erro", None):
-                dispatcher.utter_template("utter_cant_find_zip_code", tracker)
-            else:
-                uf_code = location.get("uf")
-                city = location.get("localidade")
-                neighborhood = location.get("bairro")
-
-                if tracker.get_slot("uf_code") != uf_code:
-                    events.append(SlotSet("uf_code", uf_code))
-                if tracker.get_slot("city") != city:
-                    events.append(SlotSet("city", city))
-                if tracker.get_slot("neighborhood") != neighborhood:
-                    events.append(SlotSet("neighborhood", neighborhood))
-
-                dispatcher.utter_message(
-                    "UF: {}\nCidade: {}\nBairro: {}\n".format(
-                        uf_code, city, neighborhood) +
-                    "É isso mesmo?")
-
-                # API liva
-
+        try:
+            location_request = requests.get(
+                "https://viacep.com.br/ws/{}/json/".format(zip_code))
+        except Exception as ex:
+            logger.info(ex)
+            dispatcher.utter_template("utter_cant_get_correios", tracker)
             return events
+
+        try:
+            location = json.loads(location_request.text)
+        except Exception as ex:
+            logger.info(ex)
+            dispatcher.utter_template("utter_cant_get_correios", tracker)
+            return events
+
+        if location.get("erro", None) or location.get("status_code") == 400:
+            dispatcher.utter_template("utter_cant_find_zip_code", tracker)
+        else:
+            uf_code = location.get("uf")
+            city = location.get("localidade")
+            neighborhood = location.get("bairro")
+
+            if tracker.get_slot("uf_code") != uf_code:
+                events.append(SlotSet("uf_code", uf_code))
+            if tracker.get_slot("city") != city:
+                events.append(SlotSet("city", city))
+            if tracker.get_slot("neighborhood") != neighborhood:
+                events.append(SlotSet("neighborhood", neighborhood))
+
+            dispatcher.utter_message(
+                "UF: {}\nCidade: {}\nBairro: {}\n".format(
+                    uf_code, city, neighborhood) +
+                "É isso mesmo?")
+
+        return events
 
 
 class LeadForm(FormAction):
@@ -88,9 +120,12 @@ class LeadForm(FormAction):
             or a list of them, where a first match will be picked"""
 
         return {
-            "name": self.from_text(),
-            "phone": self.from_text(),
-            "email": self.from_text(),
+            "name": [self.from_text(not_intent="deny"),
+                     self.from_entity(entity="name", intent="lead_data")],
+            "phone": [self.from_text(not_intent="deny"),
+                      self.from_entity(entity="phone-number", intent="lead_data")],
+            "email": [self.from_text(not_intent="deny"),
+                      self.from_entity(entity="email", intent="lead_data")],
         }
 
     def validate_name(
@@ -101,7 +136,7 @@ class LeadForm(FormAction):
         domain: Dict[Text, Any],
     ) -> Optional[Text]:
         name_pattern = re.compile(
-            r"^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$")
+            r"^[a-zA-Zà-ÿÀ-Ÿ]+(([',. -][a-zA-Zà-ÿÀ-Ÿ ])?[a-zA-Zà-ÿÀ-Ÿ]*)*$")
 
         if name_pattern.match(value):
             return {"name": value}
@@ -177,10 +212,14 @@ class PrimaryPreferencesForm(FormAction):
 
     def slot_mappings(self) -> Dict[Text, Union[Dict, List[Dict]]]:
         return {
-            "property_type": [
-                self.from_entity(entity="property_type"), self.from_text()],
-            "min_value": self.from_text(),
-            "max_value": self.from_text(),
+            "property_type": [self.from_entity(entity="property_type"),
+                              self.from_text(), ],
+            "min_value": [self.from_entity(entity="amount-of-money"),
+                          self.from_entity(entity="number"),
+                          self.from_text(not_intent="deny"), ],
+            "max_value": [self.from_entity(entity="amount-of-money"),
+                          self.from_entity(entity="number"),
+                          self.from_text(not_intent="deny"), ],
         }
 
     def validate_property_type(
@@ -228,14 +267,12 @@ class PrimaryPreferencesForm(FormAction):
             dispatcher.utter_template("utter_wrong_max_value", tracker)
             return {"max_value": None}
 
-        min_value = tracker.get_slot("min_value")
-
-        if max_value <= min_value:
+        if max_value <= tracker.get_slot("min_value"):
             dispatcher.utter_message(
                 "O valor informado é menor ou igual ao mínimo!")
             return {"max_value": None}
 
-        return {"max_value": value}
+        return {"max_value": max_value}
 
     def submit(self,
                dispatcher: CollectingDispatcher,
@@ -257,10 +294,15 @@ class SecondaryPreferencesForm(FormAction):
 
     def slot_mappings(self) -> Dict[Text, Union[Dict, List[Dict]]]:
         return {
-            "useful_area": self.from_text(),
-            "suite_qtt": self.from_text(),
-            "toilet_qtt": self.from_text(),
-            "parking_space_qtt": self.from_text(),
+            "useful_area": [self.from_entity(entity="distance"),
+                            self.from_entity(entity="number"),
+                            self.from_text(not_intent="deny"), ],
+            "suite_qtt": [self.from_entity(entity="number"),
+                          self.from_text(not_intent="deny"), ],
+            "toilet_qtt": [self.from_entity(entity="number"),
+                           self.from_text(not_intent="deny"), ],
+            "parking_space_qtt": [self.from_entity(entity="number"),
+                                  self.from_text(not_intent="deny"), ],
         }
 
     def validate_useful_area(
@@ -270,11 +312,15 @@ class SecondaryPreferencesForm(FormAction):
         tracker: Tracker,
         domain: Dict[Text, Any],
     ) -> Optional[Text]:
-        if value:
-            return {"useful_area": value}
-        else:
+
+        try:
+            useful_area = float(value)
+        except Exception:
             dispatcher.utter_template("utter_wrong_useful_area", tracker)
             return {"useful_area": None}
+
+        return {"useful_area": useful_area}
+
 
     def validate_suite_qtt(
         self,
@@ -283,11 +329,13 @@ class SecondaryPreferencesForm(FormAction):
         tracker: Tracker,
         domain: Dict[Text, Any],
     ) -> Optional[Text]:
-        if value:
-            return {"suite_qtt": value}
-        else:
+        try:
+            suite_qtt = int(value)
+        except Exception:
             dispatcher.utter_template("utter_wrong_suite_qtt", tracker)
             return {"suite_qtt": None}
+
+        return {"suite_qtt": suite_qtt}
 
     def validate_toilet_qtt(
         self,
@@ -296,11 +344,13 @@ class SecondaryPreferencesForm(FormAction):
         tracker: Tracker,
         domain: Dict[Text, Any],
     ) -> Optional[Text]:
-        if value:
-            return {"toilet_qtt": value}
-        else:
+        try:
+            toilet_qtt = int(value)
+        except Exception:
             dispatcher.utter_template("utter_wrong_toilet_qtt", tracker)
             return {"toilet_qtt": None}
+
+        return {"toilet_qtt": toilet_qtt}
 
     def validate_parking_space_qtt(
         self,
@@ -309,11 +359,13 @@ class SecondaryPreferencesForm(FormAction):
         tracker: Tracker,
         domain: Dict[Text, Any],
     ) -> Optional[Text]:
-        if value:
-            return {"parking_space_qtt": value}
-        else:
+        try:
+            parking_space_qtt = int(value)
+        except Exception:
             dispatcher.utter_template("utter_wrong_parking_space_qtt", tracker)
             return {"parking_space_qtt": None}
+
+        return {"parking_space_qtt": parking_space_qtt}
 
     def submit(self,
                dispatcher: CollectingDispatcher,

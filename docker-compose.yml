@@ -63,6 +63,12 @@ services:
       - ./scripts:/scripts
     command: make rasa-run-debug
 
+  duckling:
+    image: rasa/duckling:latest
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+
   actions:
     build:
       context: .

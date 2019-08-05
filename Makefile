@@ -14,4 +14,4 @@ train:
 	docker-compose run bot make train
 
 console:
-	docker-compose run bot make run-shell
+	docker-compose run bot make shell
