@@ -73,6 +73,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/actions/actions.Dockerfile
+    env_file:
+      - docker/actions/actions.env
     ports:
       - 5055:5055
     volumes:

@@ -108,6 +108,19 @@
     - form{"name": "secondary_preferences_form"}
     - form{"name": null}
 
+## Collect Lead + Cancel lead form
+* i_wanna_buy
+    - lead_form
+    - form{"name": "lead_form"}
+* deny
+    - utter_cant_signup
+    - utter_ask_continue_lead_form
+* deny
+    - utter_great
+    - action_deactivate_form
+    - form{"name": null}
+    - utter_anything_else
+
 ## Sell
 * i_wanna_sell
     - utter_sell

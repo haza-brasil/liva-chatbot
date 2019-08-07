@@ -1,3 +1,6 @@
+### Bot production env ###
+docker/actions/actions.env
+
 ### Rasa ###
 bot/models
 rasa_core.log
