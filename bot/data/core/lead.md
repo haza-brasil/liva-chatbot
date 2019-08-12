@@ -18,7 +18,7 @@
     - secondary_preferences_form
     - form{"name": "secondary_preferences_form"}
     - form{"name": null}
-    - utter_lead_slot_values
+    - action_post_lead
 * bye
     - utter_bye
 
@@ -40,7 +40,7 @@
     - secondary_preferences_form
     - form{"name": "secondary_preferences_form"}
     - form{"name": null}
-    - utter_lead_slot_values
+    - action_post_lead
 * bye
     - utter_bye
 
@@ -62,7 +62,7 @@
     - secondary_preferences_form
     - form{"name": "secondary_preferences_form"}
     - form{"name": null}
-    - utter_lead_slot_values
+    - action_post_lead
 * bye
     - utter_bye
 
@@ -82,7 +82,7 @@
     - secondary_preferences_form
     - form{"name": "secondary_preferences_form"}
     - form{"name": null}
-    - utter_lead_slot_values
+    - action_post_lead
 * bye
     - utter_bye
 

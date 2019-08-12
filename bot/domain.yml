@@ -360,6 +360,14 @@ templates:
 
         Futuramente poderei te auxiliar com locação.
 
+  utter_liva_url_profile:
+    - text: |
+        Pronto, criamos seu perfil!
+
+        Acesse-o neste link:
+
+        {liva_url}{email}
+
 actions:
   - utter_default
   - utter_greet
@@ -413,6 +421,7 @@ actions:
   - utter_sell
   - utter_rent
   - action_post_lead
+  - utter_liva_url_profile
 
 forms:
   - lead_form

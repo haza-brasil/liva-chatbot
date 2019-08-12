@@ -18,6 +18,7 @@ from .custom_form import CustomFormAction
 
 LIVA_API_CEP = os.getenv('LIVA_API_CEP', None)
 LIVA_API_LEAD = os.getenv('LIVA_API_LEAD', None)
+LIVA_PROFILE = os.getenv('LIVA_PROFILE', None)
 
 logger = logging.getLogger(__name__)
 configure_colored_logging(loglevel='DEBUG')
@@ -53,7 +54,8 @@ class ActionPostLead(Action):
             logger.info(ex)
             # dispatcher.utter_template("", tracker)
 
-        dispatcher.utter_message("Pronto, criamos seu perfil!")
+        dispatcher.utter_template(
+            "utter_liva_url_profile", tracker, liva_url=LIVA_PROFILE)
 
         return []
 
