@@ -7,8 +7,6 @@ import unidecode
 
 from typing import Dict, Text, Any, List, Union, Optional
 
-from rasa.utils.io import configure_colored_logging
-
 from rasa_sdk import Action, Tracker
 from rasa_sdk.forms import FormAction
 from rasa_sdk.events import SlotSet
@@ -21,7 +19,6 @@ LIVA_API_LEAD = os.getenv('LIVA_API_LEAD', None)
 LIVA_PROFILE = os.getenv('LIVA_PROFILE', None)
 
 logger = logging.getLogger(__name__)
-configure_colored_logging(loglevel='DEBUG')
 
 
 class ActionPostLead(Action):

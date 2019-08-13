@@ -17,7 +17,7 @@ intents:
   - i_wanna_rent
 
   - lead_data
-  - inform_preferences
+  - neighborhood_data
 
 entities:
   # Duckling entities
@@ -28,8 +28,8 @@ entities:
 
   - trading_type
   - property_type
-  - name
   - zip_code
+  - neighborhood
 
 slots:
   requested_slot:

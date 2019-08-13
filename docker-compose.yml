@@ -43,7 +43,6 @@ services:
     command: 'bash -c "for i in `seq 1 30`; do mongo mongo/rocketchat --eval \"rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})\" && s=$$? && break || s=$$?; echo \"Tried $$i times. Waiting 5 secs...\"; sleep 5; done; (exit $$s)"'
     depends_on:
       - mongo
-
   # ================================= Bot =====================================
   bot:
     image: bot
@@ -53,10 +52,12 @@ services:
     restart: unless-stopped
     env_file:
       - docker/bot/bot.env
+      - docker/private.env
     ports:
       - 5005:5005
     depends_on:
       # - actions
+      - duckling
       - mongo
     volumes:
       - ./bot:/bot
@@ -74,7 +75,7 @@ services:
       context: .
       dockerfile: ./docker/actions/actions.Dockerfile
     env_file:
-      - docker/actions/actions.env
+      - docker/private.env
     ports:
       - 5055:5055
     volumes:

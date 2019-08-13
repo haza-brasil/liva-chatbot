@@ -3,14 +3,12 @@ pipeline:
   - name: WhitespaceTokenizer
   - name: RegexFeaturizer
   - name: CRFEntityExtractor
-    features:
-      - - low
-        - title
-      - - bias
-        - prefix2
-        - digit
-        - suffix2
-      - - suffix5
+    features: [
+                ["low", "title", "upper"],
+                ["bias", "low", "prefix5", "prefix2", "suffix5", "suffix3",
+                 "suffix2", "upper", "title", "digit", "pattern"],
+                ["low", "title", "upper"]
+              ]
   - name: DucklingHTTPExtractor
     url: http://duckling:8000
     locale: pt_BR

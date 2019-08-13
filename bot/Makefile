@@ -1,29 +1,29 @@
 train:
 	rasa train --fixed-model-name current --verbose
 
+train-nlu:
+	rasa train nlu --fixed-model-name nlu
+
 shell:
-	rasa shell --endpoints endpoints_shell.yml --debug
+	rasa shell -m models/current.tar.gz --endpoints endpoints_shell.yml --debug
+
+nlu-shell:
+	rasa shell nlu --debug
 
 run-actions:
 	rasa run actions --actions actions
 
 rasa-run:
-	rasa run --endpoints endpoints.yml
+	rasa run --endpoints endpoints.yml --log-file bot.log
 
 rasa-run-debug:
-	rasa run --endpoints endpoints.yml --debug
+	rasa run --endpoints endpoints.yml --log-file bot.log --debug
+
+api:
+	rasa run --enable-api
+
+create-neighborhoods:
+	python3 neighborhoods/neighborhoods.py
 
 config-rocket:
 	python /scripts/bot_config.py
-
-
-
-run-telegram:
-	python -m rasa_core.run -d /models/dialogue -u /models/nlu/current --port 5001 --credentials credentials.yml --endpoints endpoints.yml
-
-run-api:
-	python3 -m rasa_core.run -d /models/dialogue -u /models/nlu/current --debug \
-  --port 5005 --endpoints endpoints.yml --enable_api
-
-evaluate:
-	python3 -m rasa_core.evaluate -d /models/dialogue -s data/core/
