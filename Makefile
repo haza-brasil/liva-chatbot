@@ -25,3 +25,6 @@ train-nlu:
 
 console:
 	docker-compose run bot make shell
+
+crf-test:
+	python3 scripts/crf_entity_test.py

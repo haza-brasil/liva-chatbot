@@ -1,7 +1,8 @@
 ### Private Data ###
-docker/private.env
+bot/actions/data/neighborhoods.json
 bot/data/lookup/neighborhoods.txt
 bot/data/nlu/neighborhoods.md
+docker/private.env
 
 ### Scripts ###
 scripts/results.txt

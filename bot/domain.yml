@@ -54,7 +54,11 @@ slots:
     type: unfeaturized
   city:
     type: unfeaturized
+  cities:
+    type: unfeaturized
   neighborhood:
+    type: unfeaturized
+  confirmation:
     type: unfeaturized
   min_value:
     type: unfeaturized
@@ -201,20 +205,45 @@ templates:
 
         Com suas informações pessoais coletadas, já podemos ir para o próximo passo!
 
-  # Zip Code Form
-  utter_ask_zip_code:
+  # Address Form
+  utter_ask_neighborhood:
     - text: |
-        Poderia informar o CEP do local pretendido ou próximo a ele?
+        Poderia informar o nome do bairro ou o CEP?
 
-  utter_wrong_zip_code:
+  utter_ask_confirmation:
+    - text:
+        "UF: {uf_code}\n
+        Cidade: {city}\n
+        Bairro: {neighborhood}\n
+        É isso mesmo?"
+
+  utter_cant_find_neighborhood:
     - text: |
-        Parece que você digitou o CEP de maneira errada
+        Infelizmente não encontrei nenhum bairro com este nome
+
+        Poderia informar novamente ou informar o CEP?
+
+  utter_ask_city:
+    - text: |
+        O bairro informado existe nessas sequintes cidades:
+
+        {cities}
+
+        Poderia informar a cidade que você deseja?
+
+  utter_wrong_neighborhood:
+    - text: |
+        Parece que você digitou algo errado
+
+        Poderia informar novamente o bairro desejado ou o CEP?
+
+  utter_wrong_city:
+    - text: |
+        Parece que você digitou a cidade de maneira errada, as opções são essas:
+
+        {cities}
 
         Será que poderia informar novamente?
-    - text: |
-        Aparentemente você digitou o CEP de maneira errada
-
-        Poderia, por gentileza, informar novamente?
 
   utter_searching_zip_code:
     - text: |
@@ -269,7 +298,7 @@ templates:
 
         Poderia informar informar de novo? Ex: 300.000, R$ 450.000, 200 mil reais
 
-  utter_cant_max_bigger_min:
+  utter_cant_max_big_min:
     - text: |
         O valor máximo não pode ser menor ou igual ao valor mínimo
 
@@ -388,9 +417,13 @@ actions:
   - utter_wrong_email
   - utter_submit
 
-  - utter_ask_zip_code
-  - utter_wrong_zip_code
+  - utter_ask_neighborhood
+  - utter_ask_confirmation
+  - utter_ask_city
+  - utter_wrong_neighborhood
+  - utter_wrong_city
   - utter_searching_zip_code
+  - utter_cant_find_neighborhood
   - utter_cant_get_api
   - utter_cant_work_neighborhood
   - utter_cant_find_zip_code
@@ -401,7 +434,7 @@ actions:
   - utter_wrong_property_type
   - utter_wrong_min_value
   - utter_wrong_max_value
-  - utter_cant_max_bigger_min
+  - utter_cant_max_big_min
   - utter_ask_secondary_informations
 
   - utter_ask_useful_area
@@ -424,7 +457,7 @@ actions:
   - utter_liva_url_profile
 
 forms:
+  - address_form
   - lead_form
   - primary_preferences_form
   - secondary_preferences_form
-  - zip_code_form

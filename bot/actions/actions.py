@@ -5,12 +5,8 @@ import re
 import requests
 import unidecode
 
-from typing import Dict, Text, Any, List, Union, Optional
-
 from rasa_sdk import Action, Tracker
-from rasa_sdk.forms import FormAction
 from rasa_sdk.events import SlotSet
-from rasa_sdk.executor import CollectingDispatcher
 
 from .custom_form import CustomFormAction
 
@@ -57,54 +53,84 @@ class ActionPostLead(Action):
         return []
 
 
-class ZipCodeForm(CustomFormAction):
-    def name(self):
-        """Unique identifier of the form"""
+class AddressForm(CustomFormAction):
+    def __init__(self):
+        f = open("actions/data/neighborhoods.json", "r")
+        self.neighborhoods = json.load(f)
+        f.close()
 
-        return "zip_code_form"
+        self.neighborhood_pattern = re.compile(
+            r"^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z0-9 ]*)*$")
 
-    @staticmethod
-    def required_slots(tracker: Tracker) -> List[Text]:
-        """A list of required slots that the form has to fill"""
-
-        return ["zip_code"]
-
-    def slot_mappings(self) -> Dict[Text, Union[Dict, List[Dict]]]:
-        return {
-            "zip_code": [self.from_entity(entity="phone-number"),
-                         self.from_text(not_intent="deny"), ],
-        }
-
-    def validate_zip_code(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> Optional[Text]:
-        slot_dict = {"zip_code": None}
-
-        zip_code_pattern = re.compile(
+        self.zip_code_pattern = re.compile(
             r"\b[\d]{5}([\d]{3}|-[\d]{3}|\s[\d]{3})\b")
 
-        if zip_code_pattern.match(value):
+    def name(self):
+        return "address_form"
+
+    @staticmethod
+    def required_slots(tracker):
+        return ["neighborhood", "confirmation", "city"]
+
+    def slot_mappings(self):
+        return {
+            "neighborhood": [self.from_entity(entity="neighborhood"),
+                             self.from_entity(entity="phone-number"),
+                             self.from_text(not_intent="deny"), ],
+            "confirmation": [self.from_text(), ],
+            "city": [self.from_text(not_intent="deny"), ],
+        }
+
+    def validate_neighborhood(self, value, dispatcher, tracker, domain):
+        slot_dict = {"neighborhood": None}
+
+        value = unidecode.unidecode(value)
+
+        if self.neighborhood_pattern.match(value):
+            try:
+                neighborhood = self.neighborhoods[value]
+            except KeyError:
+                dispatcher.utter_template(
+                    "utter_cant_find_neighborhood", tracker)
+            else:
+                # verificar se imobiliária trabalha com bairro
+
+                if len(neighborhood) == 1:
+                    slot_dict = {
+                        "neighborhood": value,
+                        "city": neighborhood[0].get("city")
+                    }
+                else:
+                    # verifica cidades do hostname e filtra lista
+                    cities = " | ".join([e.get("city") for e in neighborhood])
+
+                    slot_dict = {
+                        "neighborhood": value,
+                        "confirmation": True,
+                        "cities": cities
+                    }
+        elif self.zip_code_pattern.match(value):
             # real_estate_identifier = tracker.get_slot("hotname")
+            real_estate_identifier = "beiramarimoveis"
+
+            url = (LIVA_API_CEP +
+                   "postal_code={}&".format(value) +
+                   "real_estate_identifier={}".format(real_estate_identifier))
 
             try:
-                location_request = requests.get(
-                    LIVA_API_CEP + "postal_code={}&real_estate_identifier=beiramarimoveis".format(value))
+                location_request = requests.get(url)
             except Exception as ex:
-                logger.info(ex)
+                logger.warning(ex)
                 dispatcher.utter_template("utter_cant_get_api", tracker)
                 return slot_dict
 
             if location_request.status_code == 200:
-                slot_dict.update({"zip_code": value})
-
                 location = json.loads(location_request.content)
                 uf_code = location.get('state').get('uf')
                 city = location.get('city').get('name')
                 neighborhood = location.get('neighborhood').get('name')
+
+                slot_dict.update({"confirmation": None})
 
                 if tracker.get_slot("uf_code") != uf_code:
                     slot_dict.update({"uf_code": uf_code})
@@ -112,12 +138,6 @@ class ZipCodeForm(CustomFormAction):
                     slot_dict.update({"city": city})
                 if tracker.get_slot("neighborhood") != neighborhood:
                     slot_dict.update({"neighborhood": neighborhood})
-
-                dispatcher.utter_message(
-                    "UF: {}\nCidade: {}\nBairro: {}\n".format(
-                        uf_code, city, neighborhood) +
-                    "É isso mesmo?")
-                # se voltar para esse metodo?
             elif location_request.status_code == 400:
                 dispatcher.utter_template("utter_cant_work_neighborhood",
                                           tracker)
@@ -126,36 +146,62 @@ class ZipCodeForm(CustomFormAction):
             elif location_request.status_code == 500:
                 dispatcher.utter_template("utter_cant_get_api", tracker)
         else:
-            dispatcher.utter_template("utter_wrong_zip_code", tracker)
+            dispatcher.utter_template("utter_wrong_neighborhood", tracker)
 
         return slot_dict
 
-    def submit(self,
-               dispatcher: CollectingDispatcher,
-               tracker: Tracker,
-               domain: Dict[Text, Any],) -> List[Dict]:
+    def validate_confirmation(self, value, dispatcher, tracker, domain):
+        slot_dict = {"confirmation": None}
+
+        last_intent = tracker.latest_message["intent"]["name"]
+
+        if last_intent == "affirm":
+            slot_dict.update({"confirmation": True})
+        elif last_intent == "deny":
+            slot_dict.update({"neighborhood": None,
+                              "city": None})
+
+        return slot_dict
+
+    def validate_city(self, value, dispatcher, tracker, domain):
+        slot_dict = {"city": None}
+
+        cities = self.simple_text(tracker.get_slot("cities")).split(" | ")
+        value = self.simple_text(value)
+
+        if value in cities:
+            dispatcher.utter_message("Tudo certo!")
+            slot_dict.update({"city": value})
+        else:
+            dispatcher.utter_template("utter_wrong_city", tracker)
+
+        return slot_dict
+
+    def submit(self, dispatcher, tracker, domain):
         return []
 
 
 class LeadForm(CustomFormAction):
-    def name(self) -> Text:
-        """Unique identifier of the form"""
+    def __init__(self):
+        self.name_pattern = re.compile(
+            r"^[a-zA-Zà-ÿÀ-Ÿ]+(([',. -][a-zA-Zà-ÿÀ-Ÿ ])?[a-zA-Zà-ÿÀ-Ÿ]*)*$")
 
+        self.phone_pattern = re.compile(
+            r"((?:\([0-9]{1,3}\)|[0-9]{2})[ \-]*?[0-9]{4,5}(?:[\-\s\_]{1,2})" +
+            r"?[0-9]{4}(?:(?=[^0-9])|$)|[0-9]{4,5}" +
+            r"(?:[\-\s\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$))")
+
+        self.email_pattern = re.compile(
+            r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+
+    def name(self):
         return "lead_form"
 
     @staticmethod
-    def required_slots(tracker: Tracker) -> List[Text]:
-        """A list of required slots that the form has to fill"""
-
+    def required_slots(tracker: Tracker):
         return ["name", "phone", "email"]
 
-    def slot_mappings(self) -> Dict[Text, Union[Dict, List[Dict]]]:
-        """A dictionary to map required slots to
-            - an extracted entity
-            - intent: value pairs
-            - a whole message
-            or a list of them, where a first match will be picked"""
-
+    def slot_mappings(self):
         return {
             "name": [self.from_entity(entity="name", intent="lead_data"),
                      self.from_text(not_intent="deny"), ],
@@ -165,60 +211,37 @@ class LeadForm(CustomFormAction):
                       self.from_text(not_intent="deny"), ],
         }
 
-    def validate_name(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> Optional[Text]:
-        name_pattern = re.compile(
-            r"^[a-zA-Zà-ÿÀ-Ÿ]+(([',. -][a-zA-Zà-ÿÀ-Ÿ ])?[a-zA-Zà-ÿÀ-Ÿ]*)*$")
+    def validate_name(self, value, dispatcher, tracker, domain):
+        slot_dict = {"name": None}
 
-        if name_pattern.match(value):
-            return {"name": value}
+        if self.name_pattern.match(value):
+            slot_dict.update({"name": value})
         else:
             dispatcher.utter_template("utter_wrong_name", tracker)
-            return {"name": None}
 
-    def validate_phone(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> Optional[Text]:
-        phone_pattern = re.compile(
-            r"((?:\([0-9]{1,3}\)|[0-9]{2})[ \-]*?[0-9]{4,5}(?:[\-\s\_]{1,2})" +
-            r"?[0-9]{4}(?:(?=[^0-9])|$)|[0-9]{4,5}" +
-            r"(?:[\-\s\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$))")
+        return slot_dict
 
-        if phone_pattern.match(value):
-            return {"phone": value}
+    def validate_phone(self, value, dispatcher, tracker, domain):
+        slot_dict = {"phone": None}
+
+        if self.phone_pattern.match(value):
+            slot_dict.update({"phone": value})
         else:
             dispatcher.utter_template("utter_wrong_phone", tracker)
-            return {"phone": None}
 
-    def validate_email(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> Optional[Text]:
-        email_pattern = re.compile(
-            r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+        return slot_dict
 
-        if email_pattern.match(value):
-            return {"email": value}
+    def validate_email(self, value, dispatcher, tracker, domain):
+        slot_dict = {"email": None}
+
+        if self.email_pattern.match(value):
+            slot_dict.update({"email": value})
         else:
             dispatcher.utter_template("utter_wrong_email", tracker)
-            return {"email": None}
 
-    def submit(self,
-               dispatcher: CollectingDispatcher,
-               tracker: Tracker,
-               domain: Dict[Text, Any],) -> List[Dict]:
+        return slot_dict
+
+    def submit(self, dispatcher, tracker, domain):
         nickname = tracker.get_slot("name").split(" ")[0].capitalize()
 
         dispatcher.utter_template("utter_submit", tracker, nickname=nickname)
@@ -240,14 +263,14 @@ class LeadForm(CustomFormAction):
 
 
 class PrimaryPreferencesForm(CustomFormAction):
-    def name(self) -> Text:
+    def name(self):
         return "primary_preferences_form"
 
     @staticmethod
-    def required_slots(tracker: Tracker) -> List[Text]:
+    def required_slots(tracker):
         return ["property_type", "min_value", "max_value"]
 
-    def slot_mappings(self) -> Dict[Text, Union[Dict, List[Dict]]]:
+    def slot_mappings(self):
         return {
             "property_type": [self.from_entity(entity="property_type"),
                               self.from_text(), ],
@@ -259,76 +282,61 @@ class PrimaryPreferencesForm(CustomFormAction):
                           self.from_text(not_intent="deny"), ],
         }
 
-    def validate_property_type(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> Optional[Text]:
+    def validate_property_type(self, value, dispatcher, tracker, domain):
+        slot_dict = {"property_type": None}
+
         types = ["apartamento", "casa", "comercial", "rural", "terreno"]
 
         if unidecode.unidecode(value.lower()) in types:
-            return {"property_type": value.capitalize()}
+            slot_dict.update({"property_type": value.capitalize()})
         else:
             dispatcher.utter_template("utter_wrong_property_type", tracker)
-            return {"property_type": None}
 
-    def validate_min_value(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> Optional[Text]:
+        return slot_dict
+
+    def validate_min_value(self, value, dispatcher, tracker, domain):
+        slot_dict = {"min_value": None}
 
         try:
             min_value = float(value)
         except Exception:
             dispatcher.utter_template("utter_wrong_min_value", tracker)
-            return {"min_value": None}
+        else:
+            slot_dict.update({"min_value": min_value})
 
-        return {"min_value": min_value}
+        return slot_dict
 
-    def validate_max_value(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> Optional[Text]:
+    def validate_max_value(self, value, dispatcher, tracker, domain):
+        slot_dict = {"max_value": None}
 
         try:
             max_value = float(value)
         except Exception:
             dispatcher.utter_template("utter_wrong_max_value", tracker)
-            return {"max_value": None}
+        else:
+            if max_value > tracker.get_slot("min_value"):
+                slot_dict.update({"max_value": max_value})
+            else:
+                dispatcher.utter_template("utter_cant_max_big_min", tracker)
 
-        if max_value <= tracker.get_slot("min_value"):
-            dispatcher.utter_template("utter_cant_max_bigger_min", tracker)
-            return {"max_value": None}
+        return slot_dict
 
-        return {"max_value": max_value}
-
-    def submit(self,
-               dispatcher: CollectingDispatcher,
-               tracker: Tracker,
-               domain: Dict[Text, Any],) -> List[Dict]:
+    def submit(self, dispatcher, tracker, domain):
         dispatcher.utter_template("utter_ask_secondary_informations", tracker)
 
         return []
 
 
 class SecondaryPreferencesForm(CustomFormAction):
-    def name(self) -> Text:
+    def name(self):
         return "secondary_preferences_form"
 
     @staticmethod
-    def required_slots(tracker: Tracker) -> List[Text]:
+    def required_slots(tracker):
         return ["suite_qtt", "toilet_qtt",
                 "parking_space_qtt", "useful_area"]
 
-    def slot_mappings(self) -> Dict[Text, Union[Dict, List[Dict]]]:
+    def slot_mappings(self):
         return {
             "suite_qtt": [self.from_entity(entity="number"),
                           self.from_text(not_intent="deny"), ],
@@ -341,69 +349,54 @@ class SecondaryPreferencesForm(CustomFormAction):
                             self.from_text(not_intent="deny"), ],
         }
 
-    def validate_suite_qtt(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> Optional[Text]:
+    def validate_suite_qtt(self, value, dispatcher, tracker, domain):
+        slot_dict = {"suite_qtt": None}
+
         try:
             suite_qtt = int(value)
         except Exception:
             dispatcher.utter_template("utter_wrong_suite_qtt", tracker)
-            return {"suite_qtt": None}
+        else:
+            slot_dict.update({"suite_qtt": suite_qtt})
 
-        return {"suite_qtt": suite_qtt}
+        return slot_dict
 
-    def validate_toilet_qtt(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> Optional[Text]:
+    def validate_toilet_qtt(self, value, dispatcher, tracker, domain):
+        slot_dict = {"toilet_qtt": None}
+
         try:
             toilet_qtt = int(value)
         except Exception:
             dispatcher.utter_template("utter_wrong_toilet_qtt", tracker)
-            return {"toilet_qtt": None}
+        else:
+            slot_dict.update({"toilet_qtt": toilet_qtt})
 
-        return {"toilet_qtt": toilet_qtt}
+        return slot_dict
 
-    def validate_parking_space_qtt(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> Optional[Text]:
+    def validate_parking_space_qtt(self, value, dispatcher, tracker, domain):
+        slot_dict = {"parking_space_qtt": None}
+
         try:
             parking_space_qtt = int(value)
         except Exception:
-            dispatcher.utter_template("utter_wrong_parking_space_qtt", tracker)
-            return {"parking_space_qtt": None}
+            dispatcher.utter_template("utter_wrong_parking_space_qtt",
+                                      tracker)
+        else:
+            slot_dict.update({"parking_space_qtt": parking_space_qtt})
 
-        return {"parking_space_qtt": parking_space_qtt}
+        return slot_dict
 
-    def validate_useful_area(
-        self,
-        value: Text,
-        dispatcher: CollectingDispatcher,
-        tracker: Tracker,
-        domain: Dict[Text, Any],
-    ) -> Optional[Text]:
+    def validate_useful_area(self, value, dispatcher, tracker, domain):
+        slot_dict = {"useful_area": None}
 
         try:
             useful_area = float(value)
         except Exception:
             dispatcher.utter_template("utter_wrong_useful_area", tracker)
-            return {"useful_area": None}
+        else:
+            slot_dict.update({"useful_area": useful_area})
 
-        return {"useful_area": useful_area}
+        return slot_dict
 
-    def submit(self,
-               dispatcher: CollectingDispatcher,
-               tracker: Tracker,
-               domain: Dict[Text, Any],) -> List[Dict]:
+    def submit(self, dispatcher, tracker, domain):
         return []

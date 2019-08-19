@@ -38,22 +38,77 @@ def read_file(filepath):
     return neighborhoods
 
 
-def write_aditional_info(nlu_file):
+def write_intent_info(nlu_file):
     nlu_file.write("## lookup:neighborhood\n")
     nlu_file.write("data/lookup/neighborhoods.txt\n\n")
     nlu_file.write("## intent:neighborhood_data\n")
 
 
-def write_txt_and_md_files(txt_path, md_path, neighborhoods_dict):
+def treat_roman_characters(txt_file, nlu_file, neighborhood):
+    romans = {
+        "i": "1",
+        "ii": "2",
+        "iii": "3",
+        "iv": "4",
+        "v": "5"
+    }
+
+    neigh_with_int = ""
+
+    # "guará i" -> "i"
+    roman_number = neighborhood.split()[-1:][0]
+
+    for key, value in romans.items():
+        if key == roman_number:
+            # "guará i" -> "guará 1"
+            neigh_with_int = ' '.join(neighborhood.split(' ')[:-1]) + \
+                             ' {}'.format(value)
+            break
+
+    if neigh_with_int:
+        txt_file.write("{}\n".format(neigh_with_int))
+        nlu_file.write(
+            "- [{}](neighborhood:{})\n".format(neigh_with_int,
+                                               neighborhood))
+
+
+def write_neighborhood_files(txt_path, md_path,
+                             json_path, neighborhoods_dict):
     txt_file = open(txt_path, "w+")
     nlu_file = open(md_path, "w+")
 
-    write_aditional_info(nlu_file)
+    write_intent_info(nlu_file)
 
     neighborhoods = []
 
+    neighborhoods_data = {}
+
     for element in neighborhoods_dict:
-        neighborhoods.append(element.get("name").lower().strip())
+        name = element.get("name").strip().lower()
+
+        neighborhoods.append(name)
+
+        clean_name = unidecode.unidecode(
+            name.replace(" -", "").replace("'", " "))
+
+        r_name = element.get("representative_name")
+
+        data = {
+            "id": element.get("id"),
+            "city": " ".join(r_name.split(", ")[1].split(" - ")[:1]),
+            "city_id": element.get("city_id"),
+            "uf": " ".join(element.get("representative_name").split()[-1:])
+        }
+
+        try:
+            neighborhoods_data[clean_name].append(data)
+        except KeyError:
+            neighborhoods_data[clean_name] = []
+            neighborhoods_data[clean_name].append(data)
+
+    json_file = open(json_path, "w+")
+    json.dump(neighborhoods_data, json_file, indent=4, ensure_ascii=False)
+    json_file.close()
 
     neighbs_without_duplicates = list(dict.fromkeys(sorted(neighborhoods)))
 
@@ -62,8 +117,8 @@ def write_txt_and_md_files(txt_path, md_path, neighborhoods_dict):
 
         nlu_file.write("- [{}](neighborhood)\n".format(neighborhood))
 
-        # Verifying if neighborhood have accents
-        # and writing the possibilities of accentless writing
+        treat_roman_characters(txt_file, nlu_file, neighborhood)
+
         try:
             neighborhood.encode('ascii')
         except UnicodeEncodeError:
@@ -76,7 +131,8 @@ def write_txt_and_md_files(txt_path, md_path, neighborhoods_dict):
 if __name__ == "__main__":
     txt_path = "data/lookup/neighborhoods.txt"
     md_path = "data/nlu/neighborhoods.md"
+    json_path = "actions/data/neighborhoods.json"
 
     neighborhoods_dict = get_neighborhoods_from_api()
 
-    write_txt_and_md_files(txt_path, md_path, neighborhoods_dict)
+    write_neighborhood_files(txt_path, md_path, json_path, neighborhoods_dict)

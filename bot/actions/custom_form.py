@@ -1,4 +1,5 @@
 import logging
+import unidecode
 
 from rasa_sdk.forms import FormAction
 from rasa_sdk.events import SlotSet
@@ -10,6 +11,9 @@ class CustomFormAction(FormAction):
     def name(self):
         pass
         # raise NotImplementedError("A form must implement a name")
+
+    def simple_text(self, text):
+        return unidecode.unidecode(text.lower())
 
     def validate_slots(self, slot_dict, dispatcher, tracker, domain):
         for slot, value in list(slot_dict.items()):
@@ -37,9 +41,10 @@ class CustomFormAction(FormAction):
                     template = msg.get("template")
 
                     # checking if any error utter can be found on template
-                    if any(map(lambda w: w in template, error_utters)):
-                        should_use_ask_template = False
-                        break
+                    if template:
+                        if any(map(lambda w: w in template, error_utters)):
+                            should_use_ask_template = False
+                            break
 
                 if should_use_ask_template:
                     dispatcher.utter_template(

@@ -1,5 +1,51 @@
 import grequests
 import json
+import logging
+import random
+
+logger = logging.getLogger(__name__)
+
+wanna = [
+    "quero",
+    "gostaria de",
+    "tenho interesse em",
+    "pretendo",
+    "intento",
+    "cobiço",
+    "almejo",
+    "me interesso em"
+]
+
+buy = [
+    "comprar",
+    "compra",
+    "obter",
+    "adquirir"
+]
+
+quantity = [
+    "um",
+    "uma"
+]
+
+property_type = [
+    "casa",
+    "apartamento",
+    "ap",
+    "comércio",
+    "comercio",
+    "loja",
+    "estabelecimento",
+    "terreno",
+    "lote"
+]
+
+adverb = [
+    "em",
+    "aqui em",
+    "no",
+    "na"
+]
 
 
 def read_file(filepath):
@@ -24,15 +70,54 @@ def split_list(n_list, n):
     ]
 
 
-def post_requests(url, bairros):
-    for bairro in bairros:
-        text = "quero comprar uma casa em {}".format(bairro)
-        # text = "{}".format(bairro)
+def generate_text(neighborhood):
+    return "{} {} {} {} {} {}".format(random.choice(wanna),
+                                      random.choice(buy),
+                                      random.choice(quantity),
+                                      random.choice(property_type),
+                                      random.choice(adverb),
+                                      neighborhood)
+
+
+def post_requests(url, neighborhoods):
+    for neighborhood in neighborhoods:
+        text = generate_text(neighborhood)
+        # text = "quero comprar uma casa em {}".format(neighborhood)
+        # text = "{}".format(neighborhood)
 
         yield grequests.post(url, json={"text": text})
 
 
-def send_requests(n_list):
+def check_for_romans(entities, neighborhood):
+    neighborhood_contains_roman = False
+
+    romans = {
+        "1": "i",
+        "2": "ii",
+        "3": "iii",
+        "4": "iv",
+        "5": "v"
+    }
+
+    neigh_with_int = ""
+
+    # "guará i" -> "i"
+    roman_number = neighborhood.split()[-1:][0]
+
+    for key, value in romans.items():
+        if key == roman_number:
+            # "guará 1" -> "guará i"
+            neigh_with_int = ' '.join(neighborhood.split(' ')[:-1]) + \
+                             ' {}'.format(value)
+            break
+
+    if neigh_with_int and neigh_with_int in entities:
+        neighborhood_contains_roman = True
+
+    return neighborhood_contains_roman
+
+
+def send_requests(n_list, neighborhoods_json):
     url = "http://localhost:5005/model/parse"
 
     generators = []
@@ -41,71 +126,52 @@ def send_requests(n_list):
         rs = post_requests(url, neighborhoods)
         generators.append(rs)
 
-    bairro_index = 0
-    bairro_count = 0
-    count_erros = 0
-    count_acertos = 0
+    count_hits, count_misses = (0, 0)
 
-    count_one = 0
-    count_two = 0
-    count_three = 0
-    count_four = 0
-    cout_five_more = 0
-
-    for generator in generators:
-        for request in grequests.map(generator):
+    # [[n requests], [n requests], ...]
+    for index_list, generator in enumerate(generators):
+        for index_neigh, request in enumerate(grequests.map(generator)):
             if request.status_code == 200:
                 entities = str(json.loads(request.content).get("entities"))
 
-                if n_list[bairro_index][bairro_count] in entities:
-                    count_acertos += 1
+                neighborhood = n_list[index_list][index_neigh]
+                neighborhood = neighborhood.replace(" -", "").replace("'", " ")
+
+                if neighborhood in entities:
+                    count_hits += 1
                 else:
-                    size = len(n_list[bairro_index][bairro_count].split())
+                    if check_for_romans(entities, neighborhood):
+                        count_hits += 1
+                    else:
+                        text = json.loads(request.content).get("text")
+                        logger.warning(
+                            "{}\n{}\n".format(text, entities))
+                        count_misses += 1
 
-                    if size == 1:
-                        count_one += 1
-                    elif size == 2:
-                        count_two += 1
-                    elif size == 3:
-                        count_three += 1
-                    elif size == 4:
-                        count_four += 1
-                    elif size > 4:
-                        cout_five_more += 1
-
-                    # print(n_list[bairro_index][bairro_count])
-                    # print(str(json.loads(request.content).get("entities")))
-                    # print('\n')
-                    count_erros += 1
-
-                bairro_count += 1
-
-        bairro_index += 1
-        bairro_count = 0
-
-    total = count_acertos + count_erros
+    total = count_hits + count_misses
 
     try:
-        result = (count_acertos / total) * 100
+        result = (count_hits / total) * 100
     except Exception:
-        print(vars(Exception))
+        raise
 
-    f = open("results.txt", "a")
-    f.write("\nTotal: {} | Acertos: {} | Erros: {}\n".format(total, count_acertos, count_erros))
+    f = open("results.txt", "a+")
+    f.write("\nTotal: {} | Acertos: {} | Erros: {}\n".format(
+        total, count_hits, count_misses))
     f.write("Porcentagem de acertos: {:.2f}%\n".format(result))
-    f.write("1: {} | {:.2f}%\n".format(count_one, (count_one / count_erros) * 100))
-    f.write("2: {} | {:.2f}%\n".format(count_two, (count_two / count_erros) * 100))
-    f.write("3: {} | {:.2f}%\n".format(count_three, (count_three / count_erros) * 100))
-    f.write("4: {} | {:.2f}%\n".format(count_four, (count_four / count_erros) * 100))
-    f.write("> 4: {} | {:.2f}%\n".format(cout_five_more, (cout_five_more / count_erros) * 100))
     f.close()
 
 
 if __name__ == "__main__":
-    neighborhoods_path = "../bot/data/lookup/neighborhoods.txt"
+    neighborhoods_path = "bot/data/lookup/neighborhoods.txt"
+    json_path = "bot/actions/data/neighborhoods.json"
+
+    f = open(json_path, "r")
+    neighborhoods_json = json.load(f)
+    f.close()
 
     neighborhoods = read_file(neighborhoods_path)
 
     neighborhoods_split_list = split_list(neighborhoods, 1000)
 
-    send_requests(neighborhoods_split_list)
+    send_requests(neighborhoods_split_list, neighborhoods_json)
