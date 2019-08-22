@@ -11,6 +11,11 @@ from rasa.core.channels.channel import UserMessage, OutputChannel, InputChannel
 
 logger = logging.getLogger(__name__)
 
+WORDS_SEC = float(os.getenv('WORDS_PER_SECOND_TYPING', 2.5))
+PHRASE_WORDS = int(os.getenv('DEFAULT_PHRASE_WORDS', 8))
+MIN_TIME = int(os.getenv('MIN_TYPING_TIME', 1))
+MAX_TIME = int(os.getenv('MAX_TYPING_TIME', 10))
+
 
 class RocketChatBot(OutputChannel):
     @classmethod
@@ -59,8 +64,12 @@ class RocketChatBot(OutputChannel):
             self.users[recipient_id] = RocketchatHandleMessages(recipient_id,
                                                                 self)
 
-        for message_part in text.split("\n\n"):
-            self.users[recipient_id].add_message(message_part)
+        messages = text.split("\n\n")
+
+        t = threading.Thread(
+            target=self.users[recipient_id].send_messages,
+            args=(messages, ))
+        t.start()
 
 
 class RocketChatInput(InputChannel):
@@ -128,10 +137,9 @@ class RocketChatInput(InputChannel):
 class RocketchatHandleMessages:
     def __init__(self, rid, bot):
         self.rid = rid
-        self.messages = []
-        self.message_index = 0
         self.bot = bot
         self.is_typing = False
+        self.semaphore = threading.Semaphore()
 
     def manage_is_typing_message(self, log_message, activate_is_typing,
                                  typing_function):
@@ -143,45 +151,32 @@ class RocketchatHandleMessages:
             typing_function
         )
 
-    def send_message(self):
-        msg = self.messages[self.message_index]
-        self.message_index += 1
+    def send_messages(self, messages):
+        self.semaphore.acquire()
 
-        logger.info('[+] send message {}: {}'.format(self.rid, msg['message']))
-
-        self.bot.connector.send_message(self.rid, msg['message'])
-
-        if self.message_index == len(self.messages):
-            if self.is_typing:
-                self.manage_is_typing_message('deactivate typing for {}'.
-                                              format(self.rid),
-                                              False, self.deactivate_typing)
-
-            self.messages = []
-            self.message_index = 0
-
-    def add_message(self, message):
-        if not self.is_typing:
+        for idx, message in enumerate(messages):
             self.manage_is_typing_message('activate typing for {}'.
                                           format(self.rid),
                                           True, self.activate_typing)
 
-        wait_time = int(os.getenv('MIN_TYPING_TIME', 1))
-        max_time = int(os.getenv('MAX_TYPING_TIME', 10))
+            n_words = len(messages[idx].split()) if idx != 0 else PHRASE_WORDS
 
-        if len(self.messages) != 0:
-            last_msg = self.messages[-1]
-            n_words = len(last_msg['message'].split(' '))
+            wait_time = min(MAX_TIME, max(MIN_TIME, n_words // WORDS_SEC))
 
-            words_per_sec = int(os.getenv('WORDS_PER_SECOND_TYPING', 5))
-            wait_time = min(max_time,
-                            max(1, n_words // words_per_sec)
-                            ) + last_msg['time']
+            time.sleep(wait_time)
 
-        threading.Timer(wait_time, self.send_message).start()
+            logger.info('[ ] schedule msg {}: {}'.format(self.rid, message))
 
-        logger.info('[ ] schedule message {}: {}'.format(self.rid, message))
-        self.messages.append({'message': message, 'time': wait_time})
+            self.bot.connector.send_message(self.rid, message)
+
+            logger.info('[+] send msg {}: {}'.format(self.rid, message))
+
+            self.manage_is_typing_message('deactivate typing for {}'.
+                                          format(self.rid),
+                                          False, self.deactivate_typing)
+
+            time.sleep(0.5)
+        self.semaphore.release()
 
     def activate_typing(self, error, data):
         if not error:

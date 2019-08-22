@@ -5,7 +5,7 @@ bot/data/nlu/neighborhoods.md
 docker/private.env
 
 ### Scripts ###
-scripts/results.txt
+analytics/results.txt
 scripts/nlu.md
 
 ### Rasa ###

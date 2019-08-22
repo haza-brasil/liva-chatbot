@@ -28,3 +28,6 @@ console:
 
 crf-test:
 	python3 scripts/crf_entity_test.py
+
+build-requirements:
+	cd docker/requirements/ && ./build-requirements.sh

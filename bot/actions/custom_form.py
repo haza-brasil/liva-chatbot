@@ -9,8 +9,7 @@ logger = logging.getLogger(__name__)
 
 class CustomFormAction(FormAction):
     def name(self):
-        pass
-        # raise NotImplementedError("A form must implement a name")
+        return "custom_form"
 
     def simple_text(self, text):
         return unidecode.unidecode(text.lower())

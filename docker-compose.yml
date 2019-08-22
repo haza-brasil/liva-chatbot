@@ -63,7 +63,8 @@ services:
     volumes:
       - ./bot:/bot
       - ./scripts:/scripts
-    command: make rasa-run-debug
+    command: make rasa-run
+    # command: make api
 
   duckling:
     image: rasa/duckling:latest

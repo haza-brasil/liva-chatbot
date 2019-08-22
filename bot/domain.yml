@@ -104,16 +104,13 @@ templates:
 
   utter_what_know_about:
     - text: |
-        No momento eu só consigo te orientar a montar seu perfil de busca para
-        a compra de um imóvel. (ex: quero comprar um apartamento)
+        No momento eu só consigo te orientar a montar seu perfil de busca para a compra de um imóvel. (ex: quero comprar um apartamento)
 
         Agora que você já sabe do que podemos conversar, vou te dar outras dicas...
 
-        Eu consigo te entender melhor quando você me faz perguntas curtas
-        e me manda uma pergunta de cada vez.
+        Eu consigo te entender melhor quando você me faz perguntas curtas e me manda uma pergunta de cada vez.
 
-        Assim... espera eu te responder
-        daí você me manda outra!
+        Assim... espera eu te responder daí você me manda outra!
 
   utter_anything_else:
     - text: |
@@ -347,22 +344,6 @@ templates:
 
         Poderia informar novamente? Ex: 1, uma vaga, 2 vagas, três
 
-  utter_lead_slot_values:
-    - text: "* Tipo de negocioação: {trading_type}\n
-             * Nome: {name}\n
-             * Telefone: {phone}\n
-             * E-mail: {email}\n
-             * Tipo de Imóvel: {property_type}\n
-             * UF: {uf_code}\n
-             * Cidade: {city}\n
-             * Bairro: {neighborhood}\n
-             * Valor Mínimo: {min_value}\n
-             * Valor Máximo: {max_value}\n
-             * Área útil: {useful_area}\n
-             * Suítes: {suite_qtt}\n
-             * Banheiros: {toilet_qtt}\n
-             * Garagens: {parking_space_qtt}"
-
   utter_cant_signup:
     - text: "Infelizmente não podemos continuar sem suas informações"
     - text: "Para que possa te auxiliar, preciso de suas informações"
@@ -422,7 +403,7 @@ actions:
   - utter_ask_city
   - utter_wrong_neighborhood
   - utter_wrong_city
-  - utter_searching_zip_code
+  - utter_searching_zip_code # future?
   - utter_cant_find_neighborhood
   - utter_cant_get_api
   - utter_cant_work_neighborhood
@@ -446,7 +427,6 @@ actions:
   - utter_wrong_toilet_qtt
   - utter_wrong_parking_space_qtt
 
-  - utter_lead_slot_values
   - utter_cant_signup
   - utter_ask_continue_lead_form
   - utter_great
@@ -457,7 +437,7 @@ actions:
   - utter_liva_url_profile
 
 forms:
-  - address_form
   - lead_form
+  - address_form
   - primary_preferences_form
   - secondary_preferences_form

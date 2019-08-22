@@ -155,7 +155,7 @@ def send_requests(n_list, neighborhoods_json):
     except Exception:
         raise
 
-    f = open("results.txt", "a+")
+    f = open("analytics/results.txt", "a+")
     f.write("\nTotal: {} | Acertos: {} | Erros: {}\n".format(
         total, count_hits, count_misses))
     f.write("Porcentagem de acertos: {:.2f}%\n".format(result))

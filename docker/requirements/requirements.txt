@@ -1,4 +1,5 @@
-rasa==1.2.0
+rasa==1.2.3
+rasa-sdk==1.2.0
 sklearn-crfsuite==0.3.6
 nltk==3.3
 rocketchat-py-sdk==0.0.8

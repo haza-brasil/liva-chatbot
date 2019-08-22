@@ -1,4 +1,6 @@
 ## intent:i_wanna_buy
+- [comprar](trading_type)
+- [compra](trading_type:comprar)
 - quero [adquirir](trading_type:comprar) um imóvel
 - tenho interesse em [comprar](trading_type) um imóvel
 - quero [comprar](trading_type) um imóvel
