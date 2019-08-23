@@ -30,15 +30,14 @@ if not host.startswith('http://'):
 
 path = '/api/v1/login'
 
-avatar_url = 'https://raw.githubusercontent.com/lappis-unb/rouana/master/' \
-             'images/rouana_avatar.jpeg'
+avatar_url = "https://i.imgur.com/4vrNYHL.jpg"
 
 bot = {
-    'name': os.getenv('ROCKETCHAT_BOT_NAME', 'Bot'),
-    'username': os.getenv('ROCKETCHAT_BOT_USERNAME', 'bot'),
-    'password': os.getenv('ROCKETCHAT_BOT_PASSWORD', 'bot'),
+    'name': os.getenv('ROCKETCHAT_BOT_NAME', 'Liva'),
+    'username': os.getenv('ROCKETCHAT_BOT_USERNAME', 'liva'),
+    'password': os.getenv('ROCKETCHAT_BOT_PASSWORD', 'liva'),
     'avatar': os.getenv('ROCKETCHAT_BOT_AVATAR_URL', avatar_url),
-    'email': os.getenv('ROCKETCHAT_BOT_USERNAME', 'bot') + '@email.com',
+    'email': os.getenv('ROCKETCHAT_BOT_USERNAME', '') + '@email.com',
 }
 
 admin_name = os.getenv('ROCKETCHAT_ADMIN_USERNAME', 'admin')
@@ -132,7 +131,7 @@ def configure_livechat():
 
     # Change Livechat Color
     api_post('settings/Livechat_title_color', {
-        'value': "#039046",
+        'value': "#623790",
         'editor': 'color'
     })
 

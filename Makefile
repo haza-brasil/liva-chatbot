@@ -17,6 +17,10 @@ first-run:
 
 	# Actions?
 
+config-rocketchat:
+	docker-compose up mongo-init-replica
+	docker-compose up -d rocketchat
+
 train:
 	docker-compose run bot make train
 
