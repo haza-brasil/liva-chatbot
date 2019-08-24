@@ -22,6 +22,8 @@ class ActionPostLead(Action):
         return "action_post_lead"
 
     def run(self, dispatcher, tracker, domain):
+        events = []
+
         # e se nao informar opções secundárias
         data = {
             "name": tracker.get_slot("name"),
@@ -34,23 +36,109 @@ class ActionPostLead(Action):
             "min_suites": tracker.get_slot("suite_qtt"),
             "min_parking_spots": tracker.get_slot("parking_space_qtt"),
             "min_bedrooms": tracker.get_slot("toilet_qtt"),
-            "min_usable_area": tracker.get_slot("min_usable_area"),
+            "min_usable_area": tracker.get_slot("useful_area"),
             "property_type": tracker.get_slot("property_type"),
             "neighborhood_data": [[tracker.get_slot("uf_code"),
                                    tracker.get_slot("city"),
                                    tracker.get_slot("neighborhood")]]
         }
 
-        try:
-            requests.post(LIVA_API_LEAD, json=data)
-        except Exception as ex:
-            logger.info(ex)
-            # dispatcher.utter_template("", tracker)
+        if not tracker.get_slot("posted_api"):
+            try:
+                requests.post(LIVA_API_LEAD, json=data)
+            except Exception as ex:
+                logger.info(ex)
+                dispatcher.utter_template("utter_cant_get_liva", tracker)
+            else:
+                events.append(SlotSet("posted_api", True))
 
         dispatcher.utter_template(
-            "utter_liva_url_profile", tracker, liva_url=LIVA_PROFILE)
+            "utter_liva_url_profile", tracker,
+            liva_url=LIVA_PROFILE, email=tracker.get_slot("email").lower())
 
-        return []
+        return events
+
+
+class LeadForm(CustomFormAction):
+    def __init__(self):
+        self.name_pattern = re.compile(
+            r"^[a-zA-Zà-ÿÀ-Ÿ]+(([',. -][a-zA-Zà-ÿÀ-Ÿ ])?[a-zA-Zà-ÿÀ-Ÿ]*)*$")
+
+        self.phone_pattern = re.compile(
+            r"((?:\([0-9]{1,3}\)|[0-9]{2})[ \-]*?[0-9]{4,5}(?:[\-\s\_]{1,2})" +
+            r"?[0-9]{4}(?:(?=[^0-9])|$)|[0-9]{4,5}" +
+            r"(?:[\-\s\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$))")
+
+        self.email_pattern = re.compile(
+            r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+
+    def name(self):
+        return "lead_form"
+
+    @staticmethod
+    def required_slots(tracker: Tracker):
+        return ["name", "phone", "email"]
+
+    def slot_mappings(self):
+        return {
+            "name": [self.from_entity(entity="PER"),
+                     self.from_entity(entity="LOC"),
+                     self.from_text(not_intent="deny"), ],
+            "phone": [self.from_entity(entity="phone-number"),
+                      self.from_text(not_intent="deny"), ],
+            "email": [self.from_entity(entity="email"),
+                      self.from_text(not_intent="deny"), ],
+        }
+
+    def validate_name(self, value, dispatcher, tracker, domain):
+        slot_dict = {"name": None}
+
+        if self.name_pattern.match(value):
+            slot_dict.update({"name": value})
+        else:
+            dispatcher.utter_template("utter_wrong_name", tracker)
+
+        return slot_dict
+
+    def validate_phone(self, value, dispatcher, tracker, domain):
+        slot_dict = {"phone": None}
+
+        if self.phone_pattern.match(value):
+            slot_dict.update({"phone": value})
+        else:
+            dispatcher.utter_template("utter_wrong_phone", tracker)
+
+        return slot_dict
+
+    def validate_email(self, value, dispatcher, tracker, domain):
+        slot_dict = {"email": None}
+
+        if self.email_pattern.match(value):
+            slot_dict.update({"email": value})
+        else:
+            dispatcher.utter_template("utter_wrong_email", tracker)
+
+        return slot_dict
+
+    def submit(self, dispatcher, tracker, domain):
+        nickname = tracker.get_slot("name").split(" ")[0].capitalize()
+
+        dispatcher.utter_template("utter_submit", tracker, nickname=nickname)
+
+        events = []
+
+        slot_nickname = tracker.get_slot("nickname")
+
+        if slot_nickname != nickname:
+            events.append(SlotSet("nickname", nickname))
+
+        return events
+
+    def run(self, dispatcher, tracker, domain):
+        if not tracker.get_slot("name") and not tracker.get_slot("requested_slot"):
+            dispatcher.utter_template("utter_greetings_lead", tracker)
+
+        return super(LeadForm, self).run(dispatcher, tracker, domain)
 
 
 class AddressForm(CustomFormAction):
@@ -75,16 +163,18 @@ class AddressForm(CustomFormAction):
     def slot_mappings(self):
         return {
             "neighborhood": [self.from_entity(entity="neighborhood"),
+                             self.from_entity(entity="LOC"),
                              self.from_entity(entity="phone-number"),
                              self.from_text(not_intent="deny"), ],
             "confirmation": [self.from_text(), ],
-            "city": [self.from_text(not_intent="deny"), ],
+            "city": [self.from_entity(entity="LOC"),
+                     self.from_text(not_intent="deny"), ],
         }
 
     def validate_neighborhood(self, value, dispatcher, tracker, domain):
         slot_dict = {"neighborhood": None}
 
-        value = unidecode.unidecode(value)
+        value = self.simple_text(value)
 
         if self.neighborhood_pattern.match(value):
             try:
@@ -97,15 +187,17 @@ class AddressForm(CustomFormAction):
 
                 if len(neighborhood) == 1:
                     slot_dict = {
-                        "neighborhood": value,
-                        "city": neighborhood[0].get("city")
+                        "neighborhood": neighborhood[0].get("name"),
+                        "city": neighborhood[0].get("city"),
+                        "uf_code": neighborhood[0].get("uf_code"),
+                        "confirmation": True
                     }
                 else:
                     # verifica cidades do hostname e filtra lista
                     cities = " | ".join([e.get("city") for e in neighborhood])
 
                     slot_dict = {
-                        "neighborhood": value,
+                        "neighborhood": neighborhood[-1].get("name"),
                         "confirmation": True,
                         "cities": cities
                     }
@@ -166,12 +258,24 @@ class AddressForm(CustomFormAction):
     def validate_city(self, value, dispatcher, tracker, domain):
         slot_dict = {"city": None}
 
-        cities = self.simple_text(tracker.get_slot("cities")).split(" | ")
+        neighborhood = self.simple_text(
+            tracker.get_slot("neighborhood"))
+
         value = self.simple_text(value)
 
-        if value in cities:
-            dispatcher.utter_message("Tudo certo!")
-            slot_dict.update({"city": value})
+        neighborhood_list = self.neighborhoods.get(neighborhood)
+
+        city_found = False
+
+        for element in neighborhood_list:
+            if self.simple_text(element.get("city")) == value:
+                city_found = True
+                break
+
+        if city_found:
+            slot_dict.update({"city": element.get("city")})
+            slot_dict.update({"uf_code": element.get("uf_code")})
+            slot_dict.update({"confirmation": True})
         else:
             dispatcher.utter_template("utter_wrong_city", tracker)
 
@@ -179,87 +283,6 @@ class AddressForm(CustomFormAction):
 
     def submit(self, dispatcher, tracker, domain):
         return []
-
-
-class LeadForm(CustomFormAction):
-    def __init__(self):
-        self.name_pattern = re.compile(
-            r"^[a-zA-Zà-ÿÀ-Ÿ]+(([',. -][a-zA-Zà-ÿÀ-Ÿ ])?[a-zA-Zà-ÿÀ-Ÿ]*)*$")
-
-        self.phone_pattern = re.compile(
-            r"((?:\([0-9]{1,3}\)|[0-9]{2})[ \-]*?[0-9]{4,5}(?:[\-\s\_]{1,2})" +
-            r"?[0-9]{4}(?:(?=[^0-9])|$)|[0-9]{4,5}" +
-            r"(?:[\-\s\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$))")
-
-        self.email_pattern = re.compile(
-            r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
-
-    def name(self):
-        return "lead_form"
-
-    @staticmethod
-    def required_slots(tracker: Tracker):
-        return ["name", "phone", "email"]
-
-    def slot_mappings(self):
-        return {
-            "name": [self.from_entity(entity="name", intent="lead_data"),
-                     self.from_text(not_intent="deny"), ],
-            "phone": [self.from_entity(entity="phone-number"),
-                      self.from_text(not_intent="deny"), ],
-            "email": [self.from_entity(entity="email"),
-                      self.from_text(not_intent="deny"), ],
-        }
-
-    def validate_name(self, value, dispatcher, tracker, domain):
-        slot_dict = {"name": None}
-
-        if self.name_pattern.match(value):
-            slot_dict.update({"name": value})
-        else:
-            dispatcher.utter_template("utter_wrong_name", tracker)
-
-        return slot_dict
-
-    def validate_phone(self, value, dispatcher, tracker, domain):
-        slot_dict = {"phone": None}
-
-        if self.phone_pattern.match(value):
-            slot_dict.update({"phone": value})
-        else:
-            dispatcher.utter_template("utter_wrong_phone", tracker)
-
-        return slot_dict
-
-    def validate_email(self, value, dispatcher, tracker, domain):
-        slot_dict = {"email": None}
-
-        if self.email_pattern.match(value):
-            slot_dict.update({"email": value})
-        else:
-            dispatcher.utter_template("utter_wrong_email", tracker)
-
-        return slot_dict
-
-    def submit(self, dispatcher, tracker, domain):
-        nickname = tracker.get_slot("name").split(" ")[0].capitalize()
-
-        dispatcher.utter_template("utter_submit", tracker, nickname=nickname)
-
-        events = []
-
-        slot_nickname = tracker.get_slot("nickname")
-
-        if slot_nickname != nickname:
-            events.append(SlotSet("nickname", nickname))
-
-        return events
-
-    def run(self, dispatcher, tracker, domain):
-        if not tracker.get_slot("name") and not tracker.get_slot("requested_slot"):
-            dispatcher.utter_template("utter_greetings_lead", tracker)
-
-        return super(LeadForm, self).run(dispatcher, tracker, domain)
 
 
 class PrimaryPreferencesForm(CustomFormAction):

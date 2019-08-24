@@ -1,6 +1,11 @@
 language : "pt"
 pipeline:
-  - name: WhitespaceTokenizer
+  - name: SpacyNLP
+    case_sensitive: false
+    model: pt_core_news_sm
+  - name: SpacyTokenizer
+  - name: SpacyEntityExtractor
+    dimensions: ["PER", "LOC"]
   - name: RegexFeaturizer
   - name: CRFEntityExtractor
     features: [
@@ -35,5 +40,7 @@ policies:
     state_featurizer:
       - name: LabelTokenizerSingleStateFeaturizer
   - name: FallbackPolicy
+    nlu_threshold: 0.7
+    core_threshold: 0.7
   - name: MemoizationPolicy
   - name: FormPolicy

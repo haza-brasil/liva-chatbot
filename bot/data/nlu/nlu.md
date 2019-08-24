@@ -16,16 +16,18 @@
 - opa
 - ola boa tarde
 - oi
+- fala ai
 - ola de novo
 - oi amigo
 - olá amiga
 - saudações
+- eai
 - ola tem alguem aqui?
 - hey
 - vamos conversar
 - oi sou eu de novo
-- pode me tirar uma duvida
 - posso falar com voce
+- pode me tirar uma duvida
 - gostaria de tirar uma duvida
 
 ## intent:ask_how_doing
@@ -162,9 +164,6 @@
 - nao vlw
 - nao
 - não
-- nao quero
-- nao quero mais fazer isso
-- não quero mais
 - nao conheco
 - nunca
 - nao
@@ -176,8 +175,15 @@
 - não está
 - nao esta correto
 - nao ta certo
+- não tenho interesse
+
+## intent:leave
+- nao quero
+- nao quero mais fazer isso
+- não quero mais
 - quero sair
 - quero sair daqui
+- me tira daqui
 
 ## intent:what_know_about
 - sobre o que você sabe falar
@@ -200,6 +206,18 @@
 - o que vc pode me ajudar?
 
 ## intent:lead_data
+- meu nome é Guilherme
+- me chamo Kai
+- Melissa
+- Emily
+- Luana
+- José
+- Melissa Fernandes
+- Ana Gomes Souza
+- Letícia Fernandes
+- Marina Alves
+- Luiz Ribeiro Carvalho
+- Renan Barbosa Ribeiro
 - fisteltj@tieungoc.life
 - jshamen@us.adultvidlite.com
 - ikayseekellu@outlook.com

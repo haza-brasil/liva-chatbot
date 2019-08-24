@@ -11,6 +11,7 @@ intents:
 
   - affirm
   - deny
+  - leave
 
   - i_wanna_buy
   - i_wanna_sell
@@ -71,6 +72,8 @@ slots:
   toilet_qtt:
     type: unfeaturized
   parking_space_qtt:
+    type: unfeaturized
+  posted_api:
     type: unfeaturized
 
 templates:
@@ -372,11 +375,15 @@ templates:
 
   utter_liva_url_profile:
     - text: |
-        Pronto, criamos seu perfil!
-
-        Acesse-o neste link:
+        Tudo certo, você já pode acessar seu perfil neste link:
 
         {liva_url}{email}
+
+  utter_cant_get_liva:
+    - text: |
+        Infelizmente não consegui me conectar com meu servidor
+
+        Por favor, tente novamente mais tarde
 
 actions:
   - utter_default
@@ -435,6 +442,7 @@ actions:
   - utter_rent
   - action_post_lead
   - utter_liva_url_profile
+  - utter_cant_get_liva
 
 forms:
   - lead_form

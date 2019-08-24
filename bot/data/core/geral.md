@@ -26,10 +26,10 @@
 * bye
     - utter_bye
 
-## Out of Scope
-* out_of_scope
-    - utter_default
-
 ## elogios
 * elogios
     - utter_elogios
+
+## Out of Scope
+* out_of_scope
+    - utter_default

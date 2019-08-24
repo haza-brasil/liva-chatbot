@@ -4,4 +4,5 @@ sklearn-crfsuite==0.3.6
 nltk==3.3
 rocketchat-py-sdk==0.0.8
 elasticsearch==6.3.1
+spacy==2.1.4
 unidecode

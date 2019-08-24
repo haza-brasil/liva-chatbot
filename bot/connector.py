@@ -11,10 +11,10 @@ from rasa.core.channels.channel import UserMessage, OutputChannel, InputChannel
 
 logger = logging.getLogger(__name__)
 
-WORDS_SEC = float(os.getenv('WORDS_PER_SECOND_TYPING', 2.5))
+WORDS_SEC = int(os.getenv('WORDS_PER_SECOND_TYPING', 2))
 PHRASE_WORDS = int(os.getenv('DEFAULT_PHRASE_WORDS', 8))
 MIN_TIME = int(os.getenv('MIN_TYPING_TIME', 1))
-MAX_TIME = int(os.getenv('MAX_TYPING_TIME', 10))
+MAX_TIME = int(os.getenv('MAX_TYPING_TIME', 8))
 
 
 class RocketChatBot(OutputChannel):
@@ -161,7 +161,7 @@ class RocketchatHandleMessages:
 
             n_words = len(messages[idx].split()) if idx != 0 else PHRASE_WORDS
 
-            wait_time = min(MAX_TIME, max(MIN_TIME, n_words // WORDS_SEC))
+            wait_time = min(MAX_TIME, max(MIN_TIME, n_words / WORDS_SEC))
 
             time.sleep(wait_time)
 

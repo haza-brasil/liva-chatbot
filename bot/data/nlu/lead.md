@@ -1,10 +1,13 @@
 ## intent:i_wanna_buy
 - [comprar](trading_type)
 - [compra](trading_type:comprar)
+- [comprar](trading_type) [apartamento](property_type)
+- [compra](trading_type:comprar) [casa](property_type)
+- [adquirir](trading_type:comprar) [comércio](property_type:comercial)
+- [obter](trading_type:comprar) [terreno](property_type)
 - quero [adquirir](trading_type:comprar) um imóvel
 - tenho interesse em [comprar](trading_type) um imóvel
 - quero [comprar](trading_type) um imóvel
-
 - quero [comprar](trading_type) um [apartamento](property_type)
 - Quero [comprar](trading_type) uma [casa](property_type)
 - gostaria de [comprar](trading_type) um [ap](property_type:apartamento)
@@ -14,26 +17,31 @@
 - pretendo [compra](trading_type:comprar) um [ap](property_type:apartamento)
 - eu pretendo [compra](trading_type:comprar) um [apartamento](property_type)
 - intento [obter](trading_type:comprar) um [terreno](property_type)
-- gostaria de [adquirir](trading_type:comprar) [comércio](property_type:comercial)
+- gostaria de [adquirir](trading_type:comprar) um [comércio](property_type:comercial)
 - cobiço [compra](trading_type:comprar) de um [comercio](property_type:comercial)
 - almejo [obter](trading_type:comprar) um [comércio](property_type:comercial)
 - me interesso em [obter](trading_type:comprar) uma [loja](property_type:comercial)
-
+- gostaria de [comprar](trading_type) um [comércio](property_type:comercial) no [adelino simioni](neighborhood)
+- almejo [comprar](trading_type) uma [ap](property_type:apartamento) no [alpes do vale](neighborhood)
 - me interesso em [obter](trading_type:comprar) uma [comércio](property_type:comercial) aqui em [gama](neighborhood)
 - gostaria de [comprar](trading_type) um [comércio](property_type:comercial) no [alecrim](neighborhood)
-- quero [compra](trading_type:comprar) uma [ap](property_type:apartamento) no [annes](neighborhood)
 - almejo [comprar](trading_type) uma [ap](property_type:apartamento) no [areião](neighborhood)
+- quero [compra](trading_type:comprar) uma [ap](property_type:apartamento) no [annes](neighborhood)
 - cobiço [obter](trading_type:comprar) uma [loja](property_type:comercial) em [pinheiros](neighborhood)
 - gostaria de [obter](trading_type:comprar) uma [estabelecimento](property_type:comercial) na [prado](neighborhood)
 - tenho interesse em [compra](trading_type:comprar) uma [apartamento](property_type) no [quilombo](neighborhood)
 - pretendo [obter](trading_type:comprar) um [casa](property_type) na [riachuelo](neighborhood)
 - me interesso em [compra](trading_type:comprar) uma [comércio](property_type:comercial) aqui em [sapiranga](neighborhood)
 - me interesso em [obter](trading_type:comprar) uma [comércio](property_type:comercial) aqui em [aberta dos morros](neighborhood)
-- gostaria de [comprar](trading_type) um [comércio](property_type:comercial) no [adelino simioni](neighborhood)
 - quero [compra](trading_type:comprar) uma [ap](property_type:apartamento) no [adão do carmo leonel](neighborhood)
-- almejo [comprar](trading_type) uma [ap](property_type:apartamento) no [alpes do vale](neighborhood)
 
 ## intent:i_wanna_sell
+- [vender](trading_type)
+- [vender](trading_type) [ap](property_type:apartamento)
+- [vender](trading_type) [casa](property_type)
+- [venda](trading_type:vender)
+- [venda](trading_type:vender) de [apartamento](property_type)
+- [alienar](trading_type:vender) [comércio](property_type:comercial)
 - quero [vender](trading_type) uma [casa](property_type)
 - [vender](trading_type) um [apartamento](property_type)
 - como faço para [vender](trading_type) uma [casa](property_type)
@@ -51,6 +59,14 @@
 - cobiço [transacionar](trading_type:vender) de um [comercio](property_type:comercial)
 
 ## intent:i_wanna_rent
+- [alugar](trading_type)
+- [alugar](trading_type) [casa](property_type)
+- [alugar](trading_type) [comércio](property_type:comercial)
+- [aluga](trading_type:alugar)
+- [locação](trading_type:alugar) [apartamento](property_type)
+- [locação](trading_type:alugar) de [apartamento](property_type)
+- [locação](trading_type:alugar) de um [apartamento](property_type)
+- [locar](trading_type:alugar) de [apartamento](property_type)
 - quero [alugar](trading_type) uma [casa](property_type)
 - como faço para [alugar](trading_type) uma [loja](property_type:comercial)
 - Quero [alugar](trading_type) um [apartamento](property_type)

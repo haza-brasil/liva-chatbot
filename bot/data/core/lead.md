@@ -82,7 +82,7 @@
 * bye
     - utter_bye
 
-## Wanna Buy + Almost Cancel Lead Form
+## Wanna Buy - Happy Path 5
 * i_wanna_buy
     - lead_form
     - form{"name": "lead_form"}
@@ -97,6 +97,30 @@
     - secondary_preferences_form
     - form{"name": "secondary_preferences_form"}
     - form{"name": null}
+    - action_post_lead
+
+## Wanna Buy, almost deny lead form
+* i_wanna_buy
+    - lead_form
+    - form{"name": "lead_form"}
+* deny
+    - utter_cant_signup
+    - utter_ask_continue_lead_form
+* affirm
+    - utter_great
+    - lead_form
+    - form{"name": null}
+    - address_form
+    - form{"name": "address_form"}
+    - form{"name": null}
+    - primary_preferences_form
+    - form{"name": "primary_preferences_form"}
+    - form{"name": null}
+* affirm
+    - secondary_preferences_form
+    - form{"name": "secondary_preferences_form"}
+    - form{"name": null}
+    - action_post_lead
 
 ## Sell
 * i_wanna_sell

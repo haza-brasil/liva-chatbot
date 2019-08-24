@@ -24,7 +24,7 @@ api:
 	rasa run --enable-api
 
 create-neighborhoods:
-	python3 neighborhoods/neighborhoods.py
+	python3 scripts/neighborhoods.py
 
 config-rocket:
 	python /scripts/bot_config.py

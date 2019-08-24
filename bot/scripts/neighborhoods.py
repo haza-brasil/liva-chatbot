@@ -44,7 +44,7 @@ def write_intent_info(nlu_file):
     nlu_file.write("## intent:neighborhood_data\n")
 
 
-def treat_roman_characters(txt_file, nlu_file, neighborhood):
+def treat_romans_and_accents(txt_file, nlu_file, neighborhood):
     romans = {
         "i": "1",
         "ii": "2",
@@ -71,6 +71,14 @@ def treat_roman_characters(txt_file, nlu_file, neighborhood):
             "- [{}](neighborhood:{})\n".format(neigh_with_int,
                                                neighborhood))
 
+    try:
+        neighborhood.encode('ascii')
+    except UnicodeEncodeError:
+        txt_file.write("{}\n".format(unidecode.unidecode(neighborhood)))
+
+        if neigh_with_int:
+            txt_file.write("{}\n".format(unidecode.unidecode(neigh_with_int)))
+
 
 def write_neighborhood_files(txt_path, md_path,
                              json_path, neighborhoods_dict):
@@ -94,10 +102,9 @@ def write_neighborhood_files(txt_path, md_path,
         r_name = element.get("representative_name")
 
         data = {
-            "id": element.get("id"),
-            "city": " ".join(r_name.split(", ")[1].split(" - ")[:1]),
-            "city_id": element.get("city_id"),
-            "uf": " ".join(element.get("representative_name").split()[-1:])
+            "name": r_name.split(", ")[0],
+            "uf_code": r_name.split(" - ")[-1],
+            "city": " ".join(r_name.split(", ")[1].split(" - ")[:1])
         }
 
         try:
@@ -117,12 +124,7 @@ def write_neighborhood_files(txt_path, md_path,
 
         nlu_file.write("- [{}](neighborhood)\n".format(neighborhood))
 
-        treat_roman_characters(txt_file, nlu_file, neighborhood)
-
-        try:
-            neighborhood.encode('ascii')
-        except UnicodeEncodeError:
-            txt_file.write("{}\n".format(unidecode.unidecode(neighborhood)))
+        treat_romans_and_accents(txt_file, nlu_file, neighborhood)
 
     txt_file.close()
     nlu_file.close()
@@ -136,3 +138,5 @@ if __name__ == "__main__":
     neighborhoods_dict = get_neighborhoods_from_api()
 
     write_neighborhood_files(txt_path, md_path, json_path, neighborhoods_dict)
+
+    print("All neighborhoods files created")
