@@ -33,9 +33,6 @@ pipeline:
 policies:
   - name: KerasPolicy
     max_history: 10
-    core_threshold: 0.4
-    nlu_threshold: 0.3
-    rnn_size: 16
     epochs: 50
     state_featurizer:
       - name: LabelTokenizerSingleStateFeaturizer

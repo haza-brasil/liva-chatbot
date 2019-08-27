@@ -298,6 +298,18 @@ templates:
 
         Poderia informar informar de novo? Ex: 300.000, R$ 450.000, 200 mil reais
 
+  utter_wrong_negative:
+    - text: |
+        Você informou um valor negativo
+
+        Informe novamente outro valor, por favor
+
+  utter_wrong_zero:
+    - text: |
+        Esta informação não permite o valor zero
+
+        Informe outro valor, por favor
+
   utter_cant_max_big_min:
     - text: |
         O valor máximo não pode ser menor ou igual ao valor mínimo
@@ -351,9 +363,17 @@ templates:
     - text: "Infelizmente não podemos continuar sem suas informações"
     - text: "Para que possa te auxiliar, preciso de suas informações"
 
-  utter_ask_continue_lead_form:
-    - text: "Você ainda quer continuar com o cadastro?"
-    - text: "Deseja continuar com o cadastro?"
+  utter_cant_signup_without_address:
+    - text: |
+        Para que eu possa montar seu perfil, preciso saber qual bairro você tem interesse
+
+  utter_cant_signup_without_primary:
+    - text: |
+        Infelizmente não podemos continuar sem algumas das informações cruciais
+
+  utter_ask_continue:
+    - text: "Você ainda quer continuar?"
+    - text: "Deseja continuar?"
 
   utter_great:
     - text: "Beleza!"
@@ -422,6 +442,8 @@ actions:
   - utter_wrong_property_type
   - utter_wrong_min_value
   - utter_wrong_max_value
+  - utter_wrong_negative
+  - utter_wrong_zero
   - utter_cant_max_big_min
   - utter_ask_secondary_informations
 
@@ -435,7 +457,9 @@ actions:
   - utter_wrong_parking_space_qtt
 
   - utter_cant_signup
-  - utter_ask_continue_lead_form
+  - utter_cant_signup_without_address
+  - utter_cant_signup_without_primary
+  - utter_ask_continue
   - utter_great
 
   - utter_sell

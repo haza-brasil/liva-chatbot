@@ -135,7 +135,10 @@ class LeadForm(CustomFormAction):
         return events
 
     def run(self, dispatcher, tracker, domain):
-        if not tracker.get_slot("name") and not tracker.get_slot("requested_slot"):
+        name = tracker.get_slot("name")
+        requested_slot = tracker.get_slot("requested_slot")
+
+        if not any([name, requested_slot]):
             dispatcher.utter_template("utter_greetings_lead", tracker)
 
         return super(LeadForm, self).run(dispatcher, tracker, domain)
@@ -325,7 +328,12 @@ class PrimaryPreferencesForm(CustomFormAction):
         except Exception:
             dispatcher.utter_template("utter_wrong_min_value", tracker)
         else:
-            slot_dict.update({"min_value": min_value})
+            if min_value > 0:
+                slot_dict.update({"min_value": min_value})
+            elif min_value == 0:
+                dispatcher.utter_template("utter_wrong_zero", tracker)
+            else:
+                dispatcher.utter_template("utter_wrong_negative", tracker)
 
         return slot_dict
 
@@ -337,10 +345,16 @@ class PrimaryPreferencesForm(CustomFormAction):
         except Exception:
             dispatcher.utter_template("utter_wrong_max_value", tracker)
         else:
-            if max_value > tracker.get_slot("min_value"):
+            min_value = tracker.get_slot("min_value")
+
+            if (max_value > 0) and (max_value > min_value):
                 slot_dict.update({"max_value": max_value})
-            else:
+            elif (max_value > 0) and (max_value <= min_value):
                 dispatcher.utter_template("utter_cant_max_big_min", tracker)
+            elif max_value == 0:
+                dispatcher.utter_template("utter_wrong_zero", tracker)
+            else:
+                dispatcher.utter_template("utter_wrong_negative", tracker)
 
         return slot_dict
 
@@ -380,7 +394,10 @@ class SecondaryPreferencesForm(CustomFormAction):
         except Exception:
             dispatcher.utter_template("utter_wrong_suite_qtt", tracker)
         else:
-            slot_dict.update({"suite_qtt": suite_qtt})
+            if suite_qtt >= 0:
+                slot_dict.update({"suite_qtt": suite_qtt})
+            else:
+                dispatcher.utter_template("utter_wrong_negative", tracker)
 
         return slot_dict
 
@@ -392,7 +409,10 @@ class SecondaryPreferencesForm(CustomFormAction):
         except Exception:
             dispatcher.utter_template("utter_wrong_toilet_qtt", tracker)
         else:
-            slot_dict.update({"toilet_qtt": toilet_qtt})
+            if toilet_qtt >= 0:
+                slot_dict.update({"toilet_qtt": toilet_qtt})
+            else:
+                dispatcher.utter_template("utter_wrong_negative", tracker)
 
         return slot_dict
 
@@ -405,7 +425,10 @@ class SecondaryPreferencesForm(CustomFormAction):
             dispatcher.utter_template("utter_wrong_parking_space_qtt",
                                       tracker)
         else:
-            slot_dict.update({"parking_space_qtt": parking_space_qtt})
+            if parking_space_qtt >= 0:
+                slot_dict.update({"parking_space_qtt": parking_space_qtt})
+            else:
+                dispatcher.utter_template("utter_wrong_negative", tracker)
 
         return slot_dict
 
@@ -417,7 +440,10 @@ class SecondaryPreferencesForm(CustomFormAction):
         except Exception:
             dispatcher.utter_template("utter_wrong_useful_area", tracker)
         else:
-            slot_dict.update({"useful_area": useful_area})
+            if useful_area >= 0:
+                slot_dict.update({"useful_area": useful_area})
+            else:
+                dispatcher.utter_template("utter_wrong_negative", tracker)
 
         return slot_dict
 
