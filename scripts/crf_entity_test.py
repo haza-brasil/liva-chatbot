@@ -163,8 +163,8 @@ def send_requests(n_list, neighborhoods_json):
 
 
 if __name__ == "__main__":
-    neighborhoods_path = "bot/data/lookup/neighborhoods.txt"
-    json_path = "bot/actions/data/neighborhoods.json"
+    neighborhoods_path = "bot/data/neighborhoods.txt"
+    json_path = "bot/actions/neighborhoods.json"
 
     f = open(json_path, "r")
     neighborhoods_json = json.load(f)

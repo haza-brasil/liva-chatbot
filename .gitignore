@@ -1,7 +1,7 @@
 ### Private Data ###
 bot/credentials_facebook.yml
-bot/actions/data/neighborhoods.json
-bot/data/lookup/neighborhoods.txt
+bot/actions/neighborhoods.json
+bot/data/neighborhoods.txt
 bot/data/nlu/neighborhoods.md
 docker/private.env
 

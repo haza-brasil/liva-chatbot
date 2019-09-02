@@ -146,7 +146,7 @@ class LeadForm(CustomFormAction):
 
 class AddressForm(CustomFormAction):
     def __init__(self):
-        f = open("actions/data/neighborhoods.json", "r")
+        f = open("actions/neighborhoods.json", "r")
         self.neighborhoods = json.load(f)
         f.close()
 

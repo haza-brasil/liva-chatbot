@@ -18,6 +18,8 @@ def get_neighborhoods_from_api():
 
     if request.status_code == 200:
         neighborhoods_dict = json.loads(request.content)
+    else:
+        print(request.status_code)
 
     return neighborhoods_dict
 
@@ -40,7 +42,7 @@ def read_file(filepath):
 
 def write_intent_info(nlu_file):
     nlu_file.write("## lookup:neighborhood\n")
-    nlu_file.write("data/lookup/neighborhoods.txt\n\n")
+    nlu_file.write("data/neighborhoods.txt\n\n")
     nlu_file.write("## intent:neighborhood_data\n")
 
 
@@ -131,9 +133,9 @@ def write_neighborhood_files(txt_path, md_path,
 
 
 if __name__ == "__main__":
-    txt_path = "data/lookup/neighborhoods.txt"
+    txt_path = "data/neighborhoods.txt"
     md_path = "data/nlu/neighborhoods.md"
-    json_path = "actions/data/neighborhoods.json"
+    json_path = "actions/neighborhoods.json"
 
     neighborhoods_dict = get_neighborhoods_from_api()
 
