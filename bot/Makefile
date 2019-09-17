@@ -11,7 +11,7 @@ rasa-run-debug:
 	rasa run --endpoints endpoints.yml --log-file bot.log --debug
 
 rasa-run-facebook:
-	rasa run --credentials credentials_facebook.yml --endpoints endpoints.yml --log-file bot.log --debug
+	rasa run --credentials credentials_facebook.yml --endpoints endpoints.yml --log-file bot.log
 
 run-actions:
 	rasa run actions --actions actions

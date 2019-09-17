@@ -3,6 +3,8 @@ import os
 import datetime
 import hashlib
 import json
+import requests
+import yaml
 
 from rasa.core.events import SlotSet
 from rasa.core.tracker_store import MongoTrackerStore
@@ -21,6 +23,7 @@ logger = logging.getLogger(__name__)
 ENABLE_ANALYTICS = os.getenv('ENABLE_ANALYTICS', 'False').lower() == 'true'
 ENVIRONMENT_NAME = os.getenv('ENVIRONMENT_NAME', 'locahost')
 BOT_VERSION = os.getenv('BOT_VERSION', 'notdefined')
+
 HASH_GEN = hashlib.md5()
 
 
@@ -37,6 +40,11 @@ class CustomMongoTrackerStore(MongoTrackerStore):
             domain=domain,
             host="mongodb://" + url)
 
+        yml_data = yaml.load(
+            open("credentials_facebook.yml"), Loader=yaml.FullLoader)
+
+        self.fb_access_token = yml_data["facebook"]["page-access-token"]
+
         # ElasticSearch Integration
         from elasticsearch import Elasticsearch
 
@@ -46,26 +54,6 @@ class CustomMongoTrackerStore(MongoTrackerStore):
             self.es = Elasticsearch(
                 ['{}://{}:{}@{}:{}'.format(e_scheme, e_user, e_password,
                                            e_domain, e_scheme_port)],)
-
-        # RocketChat Database Integration
-        from pymongo.database import Database
-
-        self.rocket_db = Database(self.client, "rocketchat")
-        self.collection_message = "rocketchat_message"
-
-    @property
-    def rocketchat_message(self):
-        return self.rocket_db[self.collection_message]
-
-    def get_last_hostname(self, sender_id):
-        last_history = self.rocketchat_message.find_one(
-            {"t": "livechat_navigation_history",
-             "rid": sender_id}, sort=[('ts', -1)])
-
-        if not last_history:
-            return None
-
-        return last_history['navigation']['page']['location']['hostname']
 
     def _get_bag_of_words(self, message):
         tags = []
@@ -171,11 +159,22 @@ class CustomMongoTrackerStore(MongoTrackerStore):
             index -= 1
 
     def save(self, tracker, timeout=None):
-        hostname = self.get_last_hostname(tracker.sender_id)
+        # setting user name and email with facebook graph API
+        if not tracker.get_slot('name'):
+            sender_id = tracker.sender_id
+            fields = "fields=first_name,last_name,email"
+            access_token = "access_token={}".format(self.fb_access_token)
+            url = "https://graph.facebook.com/{}?{}&{}".format(
+                sender_id, fields, access_token)
 
-        # setting hostname unfeaturized slot
-        if tracker.get_slot('hostname') != hostname:
-            tracker.update(SlotSet('hostname', hostname))
+            r = requests.get(url).json()
+
+            name = "{} {}".format(r.get("first_name"), r.get("last_name"))
+
+            email = r.get('email', None)
+
+            tracker.update(SlotSet('name', name))
+            tracker.update(SlotSet('email', email)) if email else None
 
         super(CustomMongoTrackerStore, self).save(tracker)
 
