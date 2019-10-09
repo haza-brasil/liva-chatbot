@@ -1,7 +1,17 @@
+### Private Data ###
+bot/credentials_facebook.yml
+bot/actions/neighborhoods.json
+bot/data/neighborhoods.txt
+bot/data/nlu/neighborhoods.md
+docker/private.env
+
+### Scripts ###
+analytics/results.txt
+scripts/nlu.md
+
 ### Rasa ###
 bot/models
-rasa_core.log
-errors.json
+bot.log
 
 ### Rasa evaluation ###
 notebooks/models/
@@ -27,6 +37,7 @@ notebooks/stories/errors.json
 notebooks/stories/img
 notebooks/stories/results/
 notebooks/stories/matrix.pdf
+notebooks/stories/chat_graph.html
 
 ### Rocketchat ###
 /data
@@ -34,7 +45,7 @@ uploads
 
 
 ### database
-web/postegres-data
+kibanaweb/postgres-data/
 
 
 # Created by https://www.gitignore.io/api/vim,linux,macos,python

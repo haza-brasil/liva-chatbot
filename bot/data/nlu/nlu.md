@@ -1,0 +1,280 @@
+## intent:out_of_scope
+- Você fala sobre o meio ambiente?
+- Qual a origem do mundo?
+- Você tem signo?
+- Vc gosta de carnaval?
+- batatinha quando nasce
+
+## intent:greet
+- com licenca
+- bom dia
+- boa tarde
+- boa noite
+- olá
+- oie
+- oiee
+- opa
+- ola boa tarde
+- oi
+- fala ai
+- ola de novo
+- oi amigo
+- olá amiga
+- saudações
+- eai
+- ola tem alguem aqui?
+- hey
+- vamos conversar
+- oi sou eu de novo
+- posso falar com voce
+- pode me tirar uma duvida
+- gostaria de tirar uma duvida
+
+## intent:ask_how_doing
+- Tudo bem
+- Como vocês esta
+- como vai
+- como vao as coisas
+- tranquilo
+- como ta
+- joia
+- joinha
+- tudo bom
+- Tudo bem e você
+- como vc esta
+- como vai
+- vc está bem?
+- como estao as coisas
+- esta se sentindo bem
+- como esta o seu dia
+- como esta sua manha
+- como esta sua tarde
+- como esta sua noite
+- como a vida está
+- estou bem e vc?
+- estou bem e você
+- ta tudo bem?
+
+## intent:greet+ask_how_doing
+- oi tudo bem
+- oi, como vai voce
+- oi, beleza?
+- ola tudo bem com vc
+- opa tudo bem
+- eai beleza?
+- opa beleza
+- fala ai, tranquilo?
+- oi amigo, tudo bem
+- fala amiga, beleza?
+- oi assistente, tudo beleza?
+
+## intent:bye
+- Tchau obrigada
+- xau obrigado
+- xau
+- tchau
+- Tchau
+- até logo
+- namaste
+- sayonara
+- até mais
+- até breve
+- falou, valeu
+- flw vlw
+- obrigada
+- obrigado
+- preciso ir nessa
+- falo com vc depois
+- adeus
+
+## intent:elogios
+- Você é muito educado!
+- Adorei
+- Me ajudou muito
+- vc eh linda
+
+## intent:explain
+- como funciona
+- me diga mais
+- não entendi
+- Nao entendi
+- não consegui entender
+- nao consigo entender isso
+- não entendo
+- o que é isso
+- como assim
+- e como funciona
+- nao tenho certeza
+- diga mais
+- explica ai
+- explica melhor
+- explica com outras palavras
+- poderia por favor explicar melhor
+- pq
+- pq?
+- por que?
+- por quê?
+- porque?
+- porque é isso?
+- porque precisa disso
+- pq precisa disso
+- poderia me falar mais
+- me fale a diferença
+- quero mais informações
+- quero saber mais
+- gostaria de entender mais um pouco
+- pode falar melhor?
+- qual a diferença
+
+## intent:affirm
+- sim
+- claro
+- claro que estão
+- claro que estao
+- claro que sim
+- correto
+- Afirmativo
+- está sim
+- de acordo
+- Está correto
+- estão sim
+- estao
+- estão
+- sim estão corretas
+- Sim, estao
+- si
+- sim está correto
+- com certeza
+- sim, com certeza
+- sim sim
+- exato
+- Sim obrigado
+- obvio
+- obvio que sim
+- gostaria
+- gostaria sim
+- tenho interesse
+- isso
+
+## intent:deny
+- nao, obrigado
+- não obrigado
+- nao valeu
+- n vlw
+- nao vlw
+- nao
+- não
+- nao conheco
+- nunca
+- nao
+- negativo
+- jamais
+- não estão corretas
+- não estão
+- nao estao
+- não está
+- nao esta correto
+- nao ta certo
+- não tenho interesse
+
+## intent:leave
+- nao quero
+- nao quero mais fazer isso
+- não quero mais
+- quero sair
+- quero sair daqui
+- me tira daqui
+
+## intent:what_know_about
+- sobre o que você sabe falar
+- o que mais você sabe falar
+- quais assuntos você fala
+- o que você sabe
+- lista de assuntos possiveis
+- quais as perguntas vc responde
+- quais as perguntas você responde
+- quero ajuda
+- meajuda
+- meajude
+- MEAJUD
+- MEAJDA
+- me ajuda
+- me ajude
+- ajuda eu
+- ajuda
+- menu
+- o que vc pode me ajudar?
+
+## intent:lead_data
+- meu nome é Guilherme
+- me chamo Kai
+- Melissa
+- Emily
+- Luana
+- José
+- Melissa Fernandes
+- Ana Gomes Souza
+- Letícia Fernandes
+- Marina Alves
+- Luiz Ribeiro Carvalho
+- Renan Barbosa Ribeiro
+- fisteltj@tieungoc.life
+- jshamen@us.adultvidlite.com
+- ikayseekellu@outlook.com
+- bmedo.dragoste00d@bol.com.br
+- wmalek.namouchi.g@yahoo.com.br
+- ivleba@yahoo.com.br
+- dmahmoud@hotmail.com
+- tabdallah.be@hotmail.com
+- hmoktardz3l@gmail.com
+- qpgytautasi@gmail.com
+- crietmanhf@gmail.com
+- (42) 98150-1566
+- (27) 96033-3154
+- (17) 92245-8567
+- (47) 3066-2330
+- (68) 91911-5345
+- (68) 91088-9172
+- 92135-2203
+- 95638-1925
+- 98437-7508
+- 94464-8810
+- 92551-9539
+- 945238442
+- 946381594
+- 22 951325746
+- 42 24961351
+- 21 5863-6455
+- 20 mil reais
+- 50 mil
+- 1 milhão
+- uns 100 mil reais
+- acho que uns 300 mil
+- creio que 250000
+- quero gastar R$ 750.000
+- R$ 600000
+- 400k
+- 3 milhões
+- pretendo gastar 700 mil reais
+- 50m²
+- 100 metros quadrados
+- 70 metros
+- 68 metros de area util
+- pelo menos uns 80m
+- uns setenta e cinco metros
+- cinquenta metros quadrados
+- 1 suite
+- duas
+- uma suite
+- cinco suítes
+- 5 suítes
+- gostaria de 3 suites
+- 2 banheiros
+- 4 banheiro
+- tenho interesse em pelo menos 2 banheiros
+- um banheiro
+- dois banheiros
+- 1 garagem
+- uma garagem
+- duas garagens
+- quero 1 garagem

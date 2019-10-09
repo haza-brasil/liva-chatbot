@@ -1,0 +1,43 @@
+language : "pt"
+pipeline:
+  - name: SpacyNLP
+    case_sensitive: false
+    model: pt_core_news_sm
+  - name: SpacyTokenizer
+  - name: SpacyEntityExtractor
+    dimensions: ["PER", "LOC"]
+  - name: RegexFeaturizer
+  - name: CRFEntityExtractor
+    features: [
+                ["low", "title", "upper"],
+                ["bias", "low", "prefix5", "prefix2", "suffix5", "suffix3",
+                 "suffix2", "upper", "title", "digit", "pattern"],
+                ["low", "title", "upper"]
+              ]
+  - name: DucklingHTTPExtractor
+    url: http://duckling:8000
+    locale: pt_BR
+    dimensions:
+      - phone-number
+      - email
+      - amount-of-money
+      - number
+      - distance
+    timezone: America/Sao_Paulo
+  - name: EntitySynonymMapper
+  - name: CountVectorsFeaturizer
+  - name: EmbeddingIntentClassifier
+    intent_tokenization_flag: true
+    intent_split_symbol: +
+
+policies:
+  - name: KerasPolicy
+    max_history: 10
+    epochs: 50
+    state_featurizer:
+      - name: LabelTokenizerSingleStateFeaturizer
+  - name: FallbackPolicy
+    nlu_threshold: 0.7
+    core_threshold: 0.7
+  - name: MemoizationPolicy
+  - name: FormPolicy

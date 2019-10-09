@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import argparse
 import json
 import logging
 import requests
@@ -31,19 +30,22 @@ if not host.startswith('http://'):
 
 path = '/api/v1/login'
 
+avatar_url = "https://i.imgur.com/4vrNYHL.jpg"
+
 bot = {
-    'name': os.getenv('ROCKETCHAT_BOT_NAME', 'Bot'),
-    'username': os.getenv('ROCKETCHAT_BOT_USERNAME', 'bot'),
-    'password': os.getenv('ROCKETCHAT_BOT_PASSWORD', 'bot'),
-    'avatar': os.getenv('ROCKETCHAT_BOT_AVATAR_URL', 'https://raw.githubusercontent.com/lappis-unb/rouana/master/images/rouana_avatar.jpeg'),
-    'email': os.getenv('ROCKETCHAT_BOT_USERNAME', 'bot') + '@email.com',
+    'name': os.getenv('ROCKETCHAT_BOT_NAME', 'Liva'),
+    'username': os.getenv('ROCKETCHAT_BOT_USERNAME', 'liva'),
+    'password': os.getenv('ROCKETCHAT_BOT_PASSWORD', 'liva'),
+    'avatar': os.getenv('ROCKETCHAT_BOT_AVATAR_URL', avatar_url),
+    'email': os.getenv('ROCKETCHAT_BOT_USERNAME', '') + '@email.com',
 }
 
-admin_name = os.getenv('ROCKETCHAT_ADMIN_USERNAME','admin')
-admin_password = os.getenv('ROCKETCHAT_ADMIN_PASSWORD','admin')
+admin_name = os.getenv('ROCKETCHAT_ADMIN_USERNAME', 'admin')
+admin_password = os.getenv('ROCKETCHAT_ADMIN_PASSWORD', 'admin')
 
-rasa_url = os.getenv('RASA_URL','http://bot:5005/webhooks/rocketchat/webhook')
+rasa_url = os.getenv('RASA_URL', 'http://bot:5005/webhooks/rocketchat/webhook')
 user_header = None
+
 
 def api(endpoint, values=None, is_post=True):
 
@@ -57,7 +59,7 @@ def api(endpoint, values=None, is_post=True):
     data = None
     if values:
         data = json.dumps(values)
-    
+
     if is_post:
         response = requests.post(url, data=data, headers=user_header)
     else:
@@ -71,8 +73,10 @@ def api(endpoint, values=None, is_post=True):
 
     return response.json()
 
+
 def api_post(endpoint, values=None):
     return api(endpoint, values)
+
 
 def api_get(endpoint, values=None):
     return api(endpoint, values, False)
@@ -97,22 +101,20 @@ def get_authentication_token():
 
 
 def create_bot_user():
+    bot_params = {'name': bot['name'],
+                  'email': bot['email'],
+                  'password': bot['password'],
+                  'username': bot['username'],
+                  'requirePasswordChange': False,
+                  'sendWelcomeEmail': True, 'roles': ['bot']}
+
     try:
-        api_post('users.create', {
-        'name': bot['name'],
-        'email': bot['email'],
-        'password': bot['password'],
-        'username': bot['username'],
-        'requirePasswordChange': False,
-        'sendWelcomeEmail': True, 'roles': ['bot']
-    })
-    except:
+        api_post('users.create', bot_params)
+    except Exception:
         print("User already created.")
 
-    api_post('users.setAvatar', {
-        'avatarUrl': bot['avatar'],
-        'username': bot['username']
-    })
+    api_post('users.setAvatar', {'avatarUrl': bot['avatar'],
+                                 'username': bot['username']})
 
 
 def create_livechat_agent():
@@ -129,7 +131,7 @@ def configure_livechat():
 
     # Change Livechat Color
     api_post('settings/Livechat_title_color', {
-        'value': "#039046",
+        'value': "#623790",
         'editor': 'color'
     })
 
@@ -151,6 +153,8 @@ def configure_livechat():
     # Activate Livechat Webhook Send Request on Agent Messages
     api_post('settings/Livechat_webhook_on_agent_message', {'value': True})
 
+    api_post('settings/Livechat_Allow_collect_and_store_HTTP_header_informations', {'value': True})
+
 
 def configure_webhooks():
     webooks = api_get('integrations.list')
@@ -163,17 +167,14 @@ def configure_webhooks():
             return
 
     api_post('integrations.create',
-        {
-            'name': name,
-            'type': 'webhook-outgoing',
-            'enabled': True,
-            'scriptEnabled': False,
-            'event': 'sendMessage',
-            'urls': [rasa_url],
-            'username': bot['username'],
-            'channel': '@' + bot['username'],
-        }
-    )
+             {'name': name,
+              'type': 'webhook-outgoing',
+              'enabled': True,
+              'scriptEnabled': False,
+              'event': 'sendMessage',
+              'urls': [rasa_url],
+              'username': bot['username'],
+              'channel': '@' + bot['username'], })
 
 
 def configure_rocketchat():
@@ -202,9 +203,11 @@ def create_department(bot_agent_id):
         api_post('livechat/department', {
             'department': {
                 'enabled': True,
-                'showOnRegistration': True,
                 'name': 'department',
-                'description': 'default department'
+                'description': 'default department',
+                'showOnRegistration': True,
+                'email': 'department@test.com',
+                'showOnOfflineForm': False
             },
             'agents': [{
                 'agentId': bot_agent_id,
@@ -214,13 +217,15 @@ def create_department(bot_agent_id):
             }]
         })
 
+
 if __name__ == '__main__':
     logger.info('===== Automatic env configuration =====')
 
     try:
         user_header = get_authentication_token()
-    except:
+    except Exception:
         print("\n\n --------- Rocket Chat Unavailable! --------\n\n")
+        raise
 
     if user_header:
         logger.info('>> Create user')

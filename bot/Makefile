@@ -1,24 +1,33 @@
-run-rocketchat:
-	python3 run-rocketchat.py
+train:
+	rasa train --fixed-model-name current --verbose
 
-run-telegram:
-	python -m rasa_core.run -d /models/dialogue -u /models/nlu/current --port 5001 --credentials credentials.yml --endpoints endpoints.yml
+shell:
+	rasa shell -m models/current.tar.gz --endpoints endpoints_shell.yml --debug
+
+rasa-run:
+	rasa run --endpoints endpoints.yml --log-file bot.log
+
+rasa-run-debug:
+	rasa run --endpoints endpoints.yml --log-file bot.log --debug
+
+rasa-run-facebook:
+	rasa run --credentials credentials_facebook.yml --endpoints endpoints.yml --log-file bot.log
+
+run-actions:
+	rasa run actions --actions actions
+
+# only use this if testing nlu separately
+train-nlu:
+	rasa train nlu --fixed-model-name nlu
+
+nlu-shell:
+	rasa shell nlu --debug
+
+api:
+	rasa run --enable-api
+
+create-neighborhoods:
+	python3 scripts/neighborhoods.py
 
 config-rocket:
 	python /scripts/bot_config.py
-
-run-console:
-	python3 -m rasa_core.run -d /models/dialogue -u /models/nlu/current \
-  --debug --endpoints endpoints.yml
-
-run-api:
-	python3 -m rasa_core.run -d /models/dialogue -u /models/nlu/current \
-  --endpoints endpoints.yml --debug --enable_api 
-
-evaluate:
-	python3 -m rasa_core.evaluate -d /models/dialogue -s data/core/
-
-run-actions:
-	python -m rasa_core_sdk.endpoint --actions actions
-
-

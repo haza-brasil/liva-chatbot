@@ -3,63 +3,93 @@ version: '2'
 services:
   # ============================= Rocketchat ==================================
   rocketchat:
-    image: rocket.chat:0.69.2
+    image: rocketchat/rocket.chat:1.2.1
+    command: bash -c 'for i in `seq 1 30`; do node main.js && s=$$? && break || s=$$?; echo "Tried $$i times. Waiting 5 secs..."; sleep 5; done; (exit $$s)'
     restart: unless-stopped
+    volumes:
+      - ./uploads:/app/uploads
     environment:
       - PORT=3000
       - ROOT_URL=http://localhost:3000
       - MONGO_URL=mongodb://mongo:27017/rocketchat
+      - MONGO_OPLOG_URL=mongodb://mongo:27017/local
       - ADMIN_USERNAME=admin
       - ADMIN_PASS=admin
-    ports:
-      - 3000:3000
+      # - MAIL_URL=smtp://smtp.email
+      # - HTTP_PROXY=http://proxy.domain.com
+      # - HTTPS_PROXY=http://proxy.domain.com
     depends_on:
       - mongo
+    ports:
+      - 3000:3000
+    labels:
+      - "traefik.backend=rocketchat"
+      # - "traefik.frontend.rule=Host: your.domain.tld"
 
   mongo:
     image: mongo:3.2
     restart: unless-stopped
     volumes:
       - ./data/db:/data/db
-    command: mongod --smallfiles --oplogSize 128
+      - ./data/dump:/dump
+    command: mongod --smallfiles --oplogSize 128 --replSet rs0
+    labels:
+      - "traefik.enable=false"
+
+  # this container's job is just run the command to initialize the replica set.
+  # it will run the command and remove himself (it will not stay running)
+  mongo-init-replica:
+    image: mongo:3.2
+    command: 'bash -c "for i in `seq 1 30`; do mongo mongo/rocketchat --eval \"rs.initiate({ _id: ''rs0'', members: [ { _id: 0, host: ''localhost:27017'' } ]})\" && s=$$? && break || s=$$?; echo \"Tried $$i times. Waiting 5 secs...\"; sleep 5; done; (exit $$s)"'
+    depends_on:
+      - mongo
 
   # ================================= Bot =====================================
   bot:
     image: bot
     build:
       context: .
-      dockerfile: ./docker/bot.Dockerfile
+      dockerfile: ./docker/bot/bot.Dockerfile
     restart: unless-stopped
-    command: make run-rocketchat
     env_file:
-      - docker/bot.env
+      - docker/bot/bot.env
+      - docker/private.env
     ports:
-      - 5002:5002
+      - 5005:5005
     depends_on:
       - actions
+      - duckling
     volumes:
       - ./bot:/bot
       - ./scripts:/scripts
-    command: sh -c "make run-rocketchat"
+    command: make rasa-run-facebook
+
+  duckling:
+    image: rasa/duckling:latest
+    restart: unless-stopped
+    ports:
+      - 8000:8000
 
   actions:
     build:
       context: .
-      dockerfile: ./docker/actions.Dockerfile
+      dockerfile: ./docker/actions/actions.Dockerfile
+    env_file:
+      - docker/private.env
     ports:
       - 5055:5055
     volumes:
       - ./bot/actions:/bot/actions
       - ./bot/Makefile:/bot/Makefile
-    command: sh -c "make run-actions"
+    command: make run-actions
 
   # =============================== Notebooks =================================
   notebooks:
     build:
       context: .
-      dockerfile: ./docker/notebooks.Dockerfile
+      dockerfile: ./docker/notebooks/notebooks.Dockerfile
     env_file:
-      - docker/notebooks.env
+      - docker/notebooks/notebooks.env
     volumes:
       - ./bot:/work/bot
       - ./notebooks:/work/notebooks
@@ -70,7 +100,7 @@ services:
   elasticsearch:
     build:
       context: .
-      dockerfile: ./docker/elasticsearch.Dockerfile
+      dockerfile: ./docker/elasticsearch/elasticsearch.Dockerfile
     restart: unless-stopped
     ports:
       - 9200:9200
@@ -92,6 +122,28 @@ services:
       - ELASTICSEARCH_URL=http://elasticsearch:9200
     depends_on:
       - elasticsearch
+
+  kibana-web:
+    build:
+      context: .
+      dockerfile: ./docker/kibanaweb/kibana-web.Dockerfile
+    restart: unless-stopped
+    environment:
+      - PORT=8080
+      - ALLOWED_HOSTS=localhost
+      - PREFIX_URL=
+    volumes:
+      - ./kibanaweb:/kibanaweb
+    ports:
+      - 8080:8080
+    depends_on:
+      - kibana-webdb
+
+  kibana-webdb:
+    image: postgres:10.5
+    restart: unless-stopped
+    volumes:
+      - ./kibanaweb/postgres-data:/var/lib/postgresql/data
 
 volumes:
   esdata:
