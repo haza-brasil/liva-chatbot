@@ -57,9 +57,8 @@ services:
     ports:
       - 5005:5005
     depends_on:
-      # - actions
+      - actions
       - duckling
-      - mongo
     volumes:
       - ./bot:/bot
       - ./scripts:/scripts

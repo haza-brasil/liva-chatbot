@@ -2,6 +2,5 @@ action_endpoint:
   url: "http://actions:5055/webhook"
 
 tracker_store:
-  store_type: tracker_store.CustomMongoTrackerStore
-  url: ${MONGO_URL}
-  e_domain: ${ELASTICSEARCH_URL}
+  store_type: tracker_store.CustomInMemoryTrackerStore
+  url: ""
