@@ -24,19 +24,18 @@ class ActionPostLead(Action):
     def run(self, dispatcher, tracker, domain):
         events = []
 
-        # e se nao informar opções secundárias
         data = {
             "name": tracker.get_slot("name"),
             "email": tracker.get_slot("email"),
             "phone": tracker.get_slot("phone"),
-            "platform_origin_name": "Site Imobiliária",
-            "real_estate_identifier": "beiramarimoveis",
+            "platform_origin_name": "Assistente Virtual",
+            "real_estate_identifier": "muck",
             "min_budget": tracker.get_slot("min_value"),
             "max_budget": tracker.get_slot("max_value"),
-            "min_suites": tracker.get_slot("suite_qtt"),
-            "min_parking_spots": tracker.get_slot("parking_space_qtt"),
-            "min_bedrooms": tracker.get_slot("toilet_qtt"),
-            "min_usable_area": tracker.get_slot("useful_area"),
+            "min_suites": tracker.get_slot("suite_qtt") or "",
+            "min_parking_spots": tracker.get_slot("parking_space_qtt") or "",
+            "min_bedrooms": tracker.get_slot("toilet_qtt") or "",
+            "min_usable_area": tracker.get_slot("useful_area") or "",
             "property_type": tracker.get_slot("property_type"),
             "neighborhood_data": [[tracker.get_slot("uf_code"),
                                    tracker.get_slot("city"),
@@ -121,24 +120,17 @@ class LeadForm(CustomFormAction):
         return slot_dict
 
     def submit(self, dispatcher, tracker, domain):
-        nickname = tracker.get_slot("name").split(" ")[0].capitalize()
-
-        dispatcher.utter_template("utter_submit", tracker, nickname=nickname)
-
         events = []
 
-        slot_nickname = tracker.get_slot("nickname")
-
-        if slot_nickname != nickname:
-            events.append(SlotSet("nickname", nickname))
+        dispatcher.utter_template("utter_submit", tracker)
 
         return events
 
     def run(self, dispatcher, tracker, domain):
-        name = tracker.get_slot("name")
+        phone = tracker.get_slot("phone")
         requested_slot = tracker.get_slot("requested_slot")
 
-        if not any([name, requested_slot]):
+        if not any([phone, requested_slot]):
             dispatcher.utter_template("utter_greetings_lead", tracker)
 
         return super(LeadForm, self).run(dispatcher, tracker, domain)
@@ -186,27 +178,20 @@ class AddressForm(CustomFormAction):
                 dispatcher.utter_template(
                     "utter_cant_find_neighborhood", tracker)
             else:
-                # verificar se imobiliária trabalha com bairro
+                # verificando se bairro está na cidade da imobiliária
+                cities = [e.get("city") for e in neighborhood]
 
-                if len(neighborhood) == 1:
+                if "Canoas" in cities:
                     slot_dict = {
                         "neighborhood": neighborhood[0].get("name"),
-                        "city": neighborhood[0].get("city"),
-                        "uf_code": neighborhood[0].get("uf_code"),
                         "confirmation": True
                     }
                 else:
-                    # verifica cidades do hostname e filtra lista
-                    cities = " | ".join([e.get("city") for e in neighborhood])
-
-                    slot_dict = {
-                        "neighborhood": neighborhood[-1].get("name"),
-                        "confirmation": True,
-                        "cities": cities
-                    }
+                    dispatcher.utter_template(
+                        "utter_wrong_neighborhood_in_city", tracker)
         elif self.zip_code_pattern.match(value):
             # real_estate_identifier = tracker.get_slot("hotname")
-            real_estate_identifier = "beiramarimoveis"
+            real_estate_identifier = "muck"
 
             url = (LIVA_API_CEP +
                    "postal_code={}&".format(value) +
@@ -221,18 +206,24 @@ class AddressForm(CustomFormAction):
 
             if location_request.status_code == 200:
                 location = json.loads(location_request.content)
-                uf_code = location.get('state').get('uf')
+
                 city = location.get('city').get('name')
-                neighborhood = location.get('neighborhood').get('name')
 
-                slot_dict.update({"confirmation": None})
+                if city == "Canoas":
+                    uf_code = location.get('state').get('uf')
+                    neighborhood = location.get('neighborhood').get('name')
 
-                if tracker.get_slot("uf_code") != uf_code:
-                    slot_dict.update({"uf_code": uf_code})
-                if tracker.get_slot("city") != city:
-                    slot_dict.update({"city": city})
-                if tracker.get_slot("neighborhood") != neighborhood:
-                    slot_dict.update({"neighborhood": neighborhood})
+                    slot_dict.update({"confirmation": None})
+
+                    if tracker.get_slot("uf_code") != uf_code:
+                        slot_dict.update({"uf_code": uf_code})
+                    if tracker.get_slot("city") != city:
+                        slot_dict.update({"city": city})
+                    if tracker.get_slot("neighborhood") != neighborhood:
+                        slot_dict.update({"neighborhood": neighborhood})
+                else:
+                    dispatcher.utter_template(
+                        "utter_wrong_zipcode_in_city", tracker)
             elif location_request.status_code == 400:
                 dispatcher.utter_template("utter_cant_work_neighborhood",
                                           tracker)
@@ -253,34 +244,7 @@ class AddressForm(CustomFormAction):
         if last_intent == "affirm":
             slot_dict.update({"confirmation": True})
         elif last_intent == "deny":
-            slot_dict.update({"neighborhood": None,
-                              "city": None})
-
-        return slot_dict
-
-    def validate_city(self, value, dispatcher, tracker, domain):
-        slot_dict = {"city": None}
-
-        neighborhood = self.simple_text(
-            tracker.get_slot("neighborhood"))
-
-        value = self.simple_text(value)
-
-        neighborhood_list = self.neighborhoods.get(neighborhood)
-
-        city_found = False
-
-        for element in neighborhood_list:
-            if self.simple_text(element.get("city")) == value:
-                city_found = True
-                break
-
-        if city_found:
-            slot_dict.update({"city": element.get("city")})
-            slot_dict.update({"uf_code": element.get("uf_code")})
-            slot_dict.update({"confirmation": True})
-        else:
-            dispatcher.utter_template("utter_wrong_city", tracker)
+            slot_dict.update({"neighborhood": None})
 
         return slot_dict
 
@@ -312,9 +276,15 @@ class PrimaryPreferencesForm(CustomFormAction):
         slot_dict = {"property_type": None}
 
         types = ["apartamento", "casa", "comercial", "rural", "terreno"]
+        apartment_variations = ["ape", "apto", "ap",
+                                "kitinete", "quit", "kit", "quitinete"]
 
-        if unidecode.unidecode(value.lower()) in types:
+        property_type_informed = unidecode.unidecode(value.lower())
+
+        if property_type_informed in types:
             slot_dict.update({"property_type": value.capitalize()})
+        elif property_type_informed in apartment_variations:
+            slot_dict.update({"property_type": "Apartamento"})
         else:
             dispatcher.utter_template("utter_wrong_property_type", tracker)
 
