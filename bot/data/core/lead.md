@@ -1,3 +1,49 @@
+## Greet + How doing + affirm
+* greet
+    - utter_greet
+* ask_how_doing
+    - utter_ask_how_doing
+* affirm
+    - lead_form
+    - form{"name": "lead_form"}
+    - form{"name": null}
+    - address_form
+    - form{"name": "address_form"}
+    - form{"name": null}
+    - primary_preferences_form
+    - form{"name": "primary_preferences_form"}
+    - form{"name": null}
+* affirm
+    - secondary_preferences_form
+    - form{"name": "secondary_preferences_form"}
+    - form{"name": null}
+    - action_post_lead
+
+## How doing
+* ask_how_doing
+    - utter_ask_how_doing
+* affirm
+    - lead_form
+    - form{"name": "lead_form"}
+    - form{"name": null}
+    - address_form
+    - form{"name": "address_form"}
+    - form{"name": null}
+    - primary_preferences_form
+    - form{"name": "primary_preferences_form"}
+    - form{"name": null}
+* affirm
+    - secondary_preferences_form
+    - form{"name": "secondary_preferences_form"}
+    - form{"name": null}
+    - action_post_lead
+
+## How doing
+* ask_how_doing
+    - utter_ask_how_doing
+* deny
+    - utter_great
+
 ## Wanna Buy - Happy Path
 * i_wanna_buy
     - lead_form
@@ -13,6 +59,21 @@
     - secondary_preferences_form
     - form{"name": "secondary_preferences_form"}
     - form{"name": null}
+    - action_post_lead
+
+## Wanna Buy - Happy Path + deny secondary preferences
+* i_wanna_buy
+    - lead_form
+    - form{"name": "lead_form"}
+    - form{"name": null}
+    - address_form
+    - form{"name": "address_form"}
+    - form{"name": null}
+    - primary_preferences_form
+    - form{"name": "primary_preferences_form"}
+    - form{"name": null}
+* deny
+    - utter_great
     - action_post_lead
 
 ## Wanna Buy - Happy Path, Greet
@@ -32,6 +93,23 @@
     - secondary_preferences_form
     - form{"name": "secondary_preferences_form"}
     - form{"name": null}
+    - action_post_lead
+
+## Wanna Buy - Happy Path, Greet, deny secondary
+* greet
+    - utter_greet
+* i_wanna_buy
+    - lead_form
+    - form{"name": "lead_form"}
+    - form{"name": null}
+    - address_form
+    - form{"name": "address_form"}
+    - form{"name": null}
+    - primary_preferences_form
+    - form{"name": "primary_preferences_form"}
+    - form{"name": null}
+* deny
+    - utter_great
     - action_post_lead
 
 ## Wanna Buy - Happy Path, Greet, how_doing
@@ -55,6 +133,25 @@
     - form{"name": null}
     - action_post_lead
 
+## Wanna Buy - Happy Path, Greet, how_doing, deny secondary
+* greet
+    - utter_greet
+* ask_how_doing
+    - utter_ask_how_doing
+* i_wanna_buy
+    - lead_form
+    - form{"name": "lead_form"}
+    - form{"name": null}
+    - address_form
+    - form{"name": "address_form"}
+    - form{"name": null}
+    - primary_preferences_form
+    - form{"name": "primary_preferences_form"}
+    - form{"name": null}
+* deny
+    - utter_great
+    - action_post_lead
+
 ## Wanna Buy, almost deny lead_form
 * i_wanna_buy
     - lead_form
@@ -76,6 +173,27 @@
     - secondary_preferences_form
     - form{"name": "secondary_preferences_form"}
     - form{"name": null}
+    - action_post_lead
+
+## Wanna Buy, almost deny lead_form, deny secondary
+* i_wanna_buy
+    - lead_form
+    - form{"name": "lead_form"}
+* deny
+    - utter_cant_signup
+    - utter_ask_continue
+* affirm
+    - utter_great
+    - lead_form
+    - form{"name": null}
+    - address_form
+    - form{"name": "address_form"}
+    - form{"name": null}
+    - primary_preferences_form
+    - form{"name": "primary_preferences_form"}
+    - form{"name": null}
+* deny
+    - utter_great
     - action_post_lead
 
 ## Wanna Buy, almost deny lead_form address_form

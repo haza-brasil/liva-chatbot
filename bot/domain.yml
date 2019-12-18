@@ -5,6 +5,8 @@ intents:
   - bye
   - explain
   - what_know_about
+  - talk_to_human
+  - wpp
 
   - out_of_scope
   - elogios
@@ -79,25 +81,42 @@ slots:
 templates:
   utter_default:
     - text: |
-        Desculpe, ainda não sei falar sobre isso ou talvez não consegui entender direito
-        Você pode perguntar de novo de outro jeito?
+        Desculpe, ainda não sei falar sobre isso ou talvez não consegui entender direito.
+        Você pode falar de novo de outra maneira?
 
     - text: |
         Hummmm... Não sei se entendi. Pode escrever de outra forma?
 
     - text: |
-        Acho que não te entendi, você pode me perguntar de novo usando outras palavras?
+        Acho que não te entendi, você pode falar de novo usando outras palavras?
 
     - text: |
-        Vamos tentar mais uma vez? Eu não consegui te entender direito, me pergunta de outro jeito?
+        Vamos tentar mais uma vez? Eu não consegui te entender direito, poderia falar de outro jeito?
 
   utter_greet:
     - text: |
-        Oi, sou uma assistente virtual que te ajudará na sua jornada de compra, me chamo Liva.
+        Oi, {nickname}, sou uma assistente virtual que te ajudará na sua jornada de compra, me chamo Liva.
+
+        Para comerçarmos, você poderia informar o tipo de imóvel que está querendo. Ex: "apartamento 3 quartos no Centro"
+
+        Se estiver perdido, digite MEAJUDA para que eu possa te explicar melhor.
+
+    - text: |
+        Olá, {nickname}, sou a assistente virtual Liva que te ajudará na sua jornada de compra.
+
+        Para podermos começar, me informe o que você está procurando. Ex: "casa com dois quartos em São José"
+
+        Caso tenha alguma dúvida, digite MEAJUDA, que te explicarei um pouco mais.
 
   utter_ask_how_doing:
     - text: |
-        Tudo bem, obrigada! Em que posso te ajudar?
+        Tudo bem, obrigada!
+
+        Vamos encontrar o melhor imóvel para você?
+    - text: |
+        Tudo ótimo, obrigada!
+
+        Deseja encontrar o seu imóvel ideal?
 
   utter_greet_ask_how_doing:
     - text: |
@@ -105,27 +124,21 @@ templates:
 
         Estou ótima, obrigada por perguntar! Em que poderia ajudar?
 
+        Caso esteja perdido, digite MEAJUDA.
+
   utter_what_know_about:
     - text: |
-        No momento eu só consigo te orientar a montar seu perfil de busca para a compra de um imóvel. (ex: quero comprar um apartamento)
+        Uma assistente virtal é um robô que entende o que você fala e busca responder da melhor maneira possível.
 
-        Agora que você já sabe do que podemos conversar, vou te dar outras dicas...
+        No momento, consigo te orientar a montar seu perfil de busca para a compra de um imóvel. (ex: "quero comprar um apartamento")
 
-        Eu consigo te entender melhor quando você me faz perguntas curtas e me manda uma pergunta de cada vez.
+        Desta forma, terei mais informações a respeito do que você procura e poderei te atender melhor.
 
-        Assim... espera eu te responder daí você me manda outra!
+        Com as informações coletadas, irei te direcionar para o meu site que terá recomendações inteligentes de imóveis com base no seu perfil.
 
   utter_anything_else:
     - text: |
         Algo mais que possa te ajudar?
-
-  utter_explain_objetive:
-    - text: |
-        Meu objetivo é conseguir montar seu perfil de busca e te direcionar para o meu próprio site, que possui os mesmos imóveis que você procura aqui!
-
-        Realizamos esta parceria objetivando que você encontre mais rapidamente o imóvel que procura e que ele seja o ideal para você.
-
-        O interessante do meu site é que ele possui um sistema de recomendações de imóveis inteligente.
 
   utter_elogios:
     - text: |
@@ -163,35 +176,57 @@ templates:
 
         Primeiramente irei precisar de algumas informações básicas suas
 
+  utter_talk_to_human:
+    - text: |
+        Eu serei responsável com esta primeira etapa de coleta de informações.
+
+        Após esta coleta, irei te direcionar para meu site e um corretor entrará em contato com você.
+
+    - text: |
+        Nesta primeira etapa, serei eu quem coletará as suas informações.
+
+        Tendo essas informações, você será direcionado para o meu site e, assim que possível, um corretor entrará em contato.
+
+  utter_wpp:
+    - text: |
+        Após a coleta de informações e o direcionamento para meu site com seu perfil, um corretor poderá entrar em contato com você da maneira que preferir (WhatsApp, e-mail, telefone).
+    - text: |
+        Depois que eu coletar as suas informações e você tiver seu perfil em meu site, será possível que um corretor entre em contato com você da maneira que achar mais adequado (WhatsApp, e-mail, telefone).
+
   # Lead Form
   utter_ask_name:
     - text: "Qual é o seu nome?"
+    - text: "Me fala o seu nome?"
 
   utter_ask_phone:
     - text: "Qual é o seu telefone?"
+    - text: "Me fala seu telefone?"
+    - text: "Me informe seu telefone?"
 
   utter_ask_email:
     - text: "Qual é o seu e-mail?"
+    - text: "Me fala seu e-mail?"
+    - text: "Me informe seu e-mail?"
 
   utter_wrong_name:
     - text: |
-        Parece que você digitou algo errado no nome
+        Parece que você digitou algo errado no nome.
 
         Poderia informar novamente?
 
   utter_wrong_phone:
     - text: |
-        Parece que você digitou algo errado no telefone
+        Parece que você digitou algo errado no telefone.
 
         Poderia, por favor, digitar de novo?
     - text: |
-        Aparentemente você informou seu telefone de maneira errada
+        Aparentemente você informou seu telefone de maneira errada.
 
         Poderia informar novamente?
 
   utter_wrong_email:
     - text: |
-        Parece que você digitou algo errado no e-mail
+        Parece que você digitou algo errado no e-mail.
 
         Poderia, por gentileza, informar de novo?
 
@@ -199,7 +234,7 @@ templates:
     - text: |
         Tudo certo, {nickname}!
 
-        Como ja tenho suas informações pessoais, podemos seguir para o próximo passo
+        Como ja tenho suas informações pessoais, podemos seguir para o próximo passo!
     - text: |
         Perfeito, {nickname}!
 
@@ -211,15 +246,15 @@ templates:
         Poderia informar o nome do bairro ou o CEP?
 
   utter_ask_confirmation:
-    - text:
-        "UF: {uf_code}\n
-        Cidade: {city}\n
-        Bairro: {neighborhood}\n
-        É isso mesmo?"
+    - text: |
+        UF: {uf_code}
+        Cidade: {city}
+        Bairro: {neighborhood}
+        É isso mesmo?
 
   utter_cant_find_neighborhood:
     - text: |
-        Infelizmente não encontrei nenhum bairro com este nome
+        Infelizmente não encontrei nenhum bairro com este nome.
 
         Poderia informar novamente ou informar o CEP?
 
@@ -233,9 +268,9 @@ templates:
 
   utter_wrong_neighborhood:
     - text: |
-        Parece que você digitou algo errado
+        Parece que você digitou algo errado no bairro.
 
-        Poderia informar novamente o bairro desejado ou o CEP?
+        Poderia informá-lo novamente ou o CEP?
 
   utter_wrong_city:
     - text: |
@@ -243,11 +278,33 @@ templates:
 
         {cities}
 
-        Será que poderia informar novamente?
+        Poderia informar novamente?
 
   utter_searching_zip_code:
     - text: |
         Só um instante, irei procurar as informações a respeito deste cep...
+
+  utter_wrong_neighborhood_in_city:
+    - text: |
+        Infelizmente, a {hostname} não possui imóveis para este bairro.
+
+        Informe outro bairro ou CEP, por favor.
+
+    - text: |
+        O bairro informado não possui imóveis na {hostname}.
+
+        Me informe outro bairro ou CEP, por gentileza.
+
+  utter_wrong_zipcode_in_city:
+    - text: |
+        Infelizmente, a {hostname} não possui imóveis para o CEP informado.
+
+        Informe outro bairro ou CEP, por favor.
+
+    - text: |
+        O CEP informado não possui imóveis na {hostname}.
+
+        Me informe outro bairro ou CEP, por gentileza.
 
   utter_cant_get_api:
     - text: |
@@ -300,19 +357,19 @@ templates:
 
   utter_wrong_negative:
     - text: |
-        Você informou um valor negativo
+        Você informou um valor negativo.
 
         Informe novamente outro valor, por favor
 
   utter_wrong_zero:
     - text: |
-        Esta informação não permite o valor zero
+        Esta informação não permite o valor zero.
 
         Informe outro valor, por favor
 
   utter_cant_max_big_min:
     - text: |
-        O valor máximo não pode ser menor ou igual ao valor mínimo
+        O valor máximo não pode ser menor ou igual ao valor mínimo.
 
         Poderia informar novamente?
 
@@ -324,16 +381,34 @@ templates:
 
   # Secondary User Real State Prefences Form
   utter_ask_useful_area:
-    - text: "Qual a área total útil?"
+    - text: |
+        Qual a área total útil?
+
+    - text: |
+        Me fala qual a área total útil desejada?
 
   utter_ask_suite_qtt:
-    - text: "Qual a quantidade de suítes que deseja?"
+    - text: |
+        Qual a quantidade de suítes que deseja?
+
+    - text: |
+        Poderia informar a quantidade de suítes?
+
+    - text: |
+       Quantas suítes você deseja?
 
   utter_ask_toilet_qtt:
-    - text: "Qual a quantidade de banheiros que deseja?" # Já contando com suites?
+    - text: |
+        Qual a quantidade de banheiros que deseja?
+    - text: |
+        Quantos banheiros você gostaria?
 
   utter_ask_parking_space_qtt:
-    - text: "Qual a quantidade de vagas na garagem que deseja?"
+    - text: |
+        Qual a quantidade de vagas na garagem que deseja?
+
+    - text: |
+        Quantas vagas de garagem você deseja?
 
   utter_wrong_useful_area:
     - text: |
@@ -412,9 +487,10 @@ actions:
   - utter_greet_ask_how_doing
   - utter_what_know_about
   - utter_anything_else
-  - utter_explain_objetive
   - utter_elogios
   - utter_bye
+  - utter_talk_to_human
+  - utter_wpp
 
   - utter_greetings_lead
   - utter_ask_name
@@ -431,6 +507,8 @@ actions:
   - utter_wrong_neighborhood
   - utter_wrong_city
   - utter_searching_zip_code # future?
+  - utter_wrong_neighborhood_in_city
+  - utter_wrong_zipcode_in_city
   - utter_cant_find_neighborhood
   - utter_cant_get_api
   - utter_cant_work_neighborhood

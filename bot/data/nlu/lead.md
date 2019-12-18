@@ -1,6 +1,5 @@
 ## intent:i_wanna_buy
 - [comprar](trading_type)
-- [compra](trading_type:comprar)
 - [comprar](trading_type) [apartamento](property_type)
 - [compra](trading_type:comprar) [casa](property_type)
 - [adquirir](trading_type:comprar) [comércio](property_type:comercial)
@@ -34,10 +33,58 @@
 - me interesso em [compra](trading_type:comprar) uma [comércio](property_type:comercial) aqui em [sapiranga](neighborhood)
 - me interesso em [obter](trading_type:comprar) uma [comércio](property_type:comercial) aqui em [aberta dos morros](neighborhood)
 - quero [compra](trading_type:comprar) uma [ap](property_type:apartamento) no [adão do carmo leonel](neighborhood)
+- [apartamento](property_type) [2](suite_qtt) quartos
+- [casa](property_type) com [dois](suite_qtt:2) quartos
+- quero um [ap](property_type:apartamento) de [3](suite_qtt) quartos
+- gostaria de uma [casa](property_type) contendo [quatro](suite_qtt:4) quartos
+- me indique um bom imóvel com [2](suite_qtt:2) quartos
+- [kitinete](property_type:apartamento) com [um](suite_qtt:1) quarto
+- [quitinete](property_type:apartamento) com [seis](suite_qtt:6) quartos
+- [kit](property_type:apartamento) com [três](suite_qtt:3) quartos
+- [casa](property_type) de [cinco](suite_qtt:5) quartos
+- [apartamento](property_type) em [areiao](neighborhood)
+- quero uma [casa](property_type) em [brazlandia](neighborhood)
+- tenho interesse em um [terreno](property_type) no [campo belo](neighborhood)
+- [ap](property_type:apartamento) [3](suite_qtt) quartos na [cidade alta](neighborhood)
+- poderia me recomendar alguma [casa](property_type) com [2](suite_qtt) quartos aqui em [joão pessoa](neighborhood)
+- [casa](property_type) [quatro](suite_qtt:4) quartos em [cumbuco](neighborhood)
+- estou a procura de um [apê](property_type:apartamento) de [3](suite_qtt) quartos no bairro [guarani](neighborhood)
+- queria ver um imóvel
+- quero ver um imóvel
+- gostaria que me ajudasse a encontrar um imóvel
+- estou procurando um imóvel
+- me ajuda a encontrar um imóvel
+- me ajuda a encontrar uma [casa](property_type)
+- queria ver no bairro [petrópolis](neighborhood)
+- gostaria de ver uma [casa](property_type)
+- gostaria de ver uma [casa](property_type) no [setor norte](neighborhood) com [três](suite_qtt:3) dormitórios
+- gostaria de ver um [apto](property_type:apartamento)
+- gostaria de ver um [apto](property_type:apartamento) de [2](suite_qtt) dormitórios
+- gostaria de ver um [apto](property_type:apartamento) de [4](suite_qtt) dormitórios no bairro [taguatinga](neighborhood)
+- queria saber de um [apê](property_type:apartamento)
+- queria saber de um [apê](property_type:apartamento) com [um](suite_qtt:1) dormitório
+- queria saber de um [apê](property_type:apartamento) com [3](suite_qtt) dormitórios em [terra nova](neighborhood)
+- eu queria ver um [apartamento](property_type)
+- busco um [ap](property_type:apartamento)
+- estou buscando um [apê](property_type:apartamento)
+- estou buscando um [apê](property_type:apartamento) contendo [dois](suite_qtt:2) quartos
+- poderia me mostrar um [apartamento](property_type)
+- poderia me mostrar um bom [apartamento](property_type) em [vida nova](neighborhood)
+- estou a procura de um [apto](property_type:apartamento)
+- quais as opções de imóveis no bairro [santa rita](neighborhood)
+- busco um [terreno](property_type)
+- procuro uma [loja](property_type:comercial)
+- gostaria de saber de [apartamentos](property_type:apartamento) bons
+- gostaria de olhar uma [casa](property_type)
+- me indique um bom [apê](property_type:apartamento) de [2](suite_qtt) quartos
+- [casa](property_type) com [dois](suite_qtt:2) quartos em [são josé](neighborhood)
+- [apartamento](property_type) [3](suite_qtt) quartos no [centro](neighborhood)
+- [apartamento](property_type) no [centro](neighborhood)
 
 ## intent:i_wanna_sell
 - [vender](trading_type)
 - [vender](trading_type) [ap](property_type:apartamento)
+- [vender](trading_type) [apartamento](property_type)
 - [vender](trading_type) [casa](property_type)
 - [venda](trading_type:vender)
 - [venda](trading_type:vender) de [apartamento](property_type)

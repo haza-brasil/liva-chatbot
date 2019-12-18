@@ -33,11 +33,19 @@ class CustomInMemoryTrackerStore(InMemoryTrackerStore):
 
             r = requests.get(url).json()
 
-            name = "{} {}".format(r.get("first_name"), r.get("last_name"))
+            first_name = r.get("first_name", "")
+            last_name = r.get("last_name", "")
+
+            if first_name:
+                name = "{} {}".format(first_name, last_name)
+                tracker.update(SlotSet('name', name))
+                tracker.update(SlotSet('nickname', r.get("first_name")))
 
             email = r.get('email', None)
-
-            tracker.update(SlotSet('name', name))
             tracker.update(SlotSet('email', email)) if email else None
+
+            tracker.update(SlotSet('hostname', "Muck"))
+            tracker.update(SlotSet('city', "Canoas"))
+            tracker.update(SlotSet('uf_code', "RS"))
 
         super(CustomInMemoryTrackerStore, self).save(tracker)

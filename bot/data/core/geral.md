@@ -2,16 +2,6 @@
 * greet
     - utter_greet
 
-## How doing
-* ask_how_doing
-    - utter_ask_how_doing
-
-## Greet + How doing
-* greet
-    - utter_greet
-* ask_how_doing
-    - utter_ask_how_doing
-
 ## (greet+ask_how_doing)
 * greet+ask_how_doing
     - utter_greet_ask_how_doing
@@ -33,3 +23,11 @@
 ## Out of Scope
 * out_of_scope
     - utter_default
+
+## talk_to_human
+* talk_to_human
+    - utter_talk_to_human
+
+## wpp
+* wpp
+    - utter_wpp

@@ -17,7 +17,7 @@ def get_neighborhoods_from_api():
     neighborhoods_dict = {}
 
     if request.status_code == 200:
-        neighborhoods_dict = json.loads(request.content)
+        neighborhoods_dict = json.loads(request.content.decode('utf-8'))
     else:
         print(request.status_code)
 

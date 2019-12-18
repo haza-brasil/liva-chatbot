@@ -155,6 +155,10 @@
 - gostaria sim
 - tenho interesse
 - isso
+- vamos
+- podemos
+- vamos sim
+- pode ser
 
 ## intent:deny
 - nao, obrigado
@@ -196,7 +200,7 @@
 - quero ajuda
 - meajuda
 - meajude
-- MEAJUD
+- MEAJUDA
 - MEAJDA
 - me ajuda
 - me ajude
@@ -278,3 +282,26 @@
 - uma garagem
 - duas garagens
 - quero 1 garagem
+
+## intent:talk_to_human
+- poderia conversar com uma pessoa
+- será que teria como eu falar com uma pessoa
+- quero falar diretamente com outra pessoa
+- quero conversar com alguma pessoa
+- vc tem o numero do corretor para que eu possa conversar
+- quero conversar com um humano
+- pode me passar o numero do corretor
+- deixa eu falar com um ser humano
+- quero falar com um ser humano
+- me passa o numero do corretor
+- quero falar com uma pessoa
+- quero falar com alguem
+
+## intent:wpp
+- me passa o seu wpp
+- quero conversar pelo whatsapp
+- tem wpp?
+- quero o whatsapp do corretor
+- me passa o wpp do corretor
+- qual é o seu wpp
+- vamos conversar pelo whatsapp

@@ -15,15 +15,3 @@
 	- utter_ask_how_doing
 * what_know_about
 	- utter_what_know_about
-
-## Know About + Explain
-* what_know_about
-	- utter_what_know_about
-* explain
-	- utter_explain_objetive
-
-## Greet + Explain
-* greet
-	- utter_greet
-* explain
-	- utter_explain_objetive

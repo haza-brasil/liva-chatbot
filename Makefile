@@ -13,8 +13,6 @@ first-run:
 	docker-compose run --rm bot make config-rocket
 	docker-compose up -d bot
 
-	docker-compose up -d kibana-web
-
 	# Actions?
 
 config-rocketchat:
